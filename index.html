@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perpustakaan SDN Pisangan 01</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #263238;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .app.show {
+      display: flex;
+    }
+
+    .sidebar {
+      width: 245px;
+      background: #173b35;
+      color: #fff;
+      padding: 20px 14px;
+      position: fixed;
+      inset: 0 auto 0 0;
+      overflow: auto;
+    }
+
+    .brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 5px 8px 24px;
+    }
+
+    .brand-icon {
+      font-size: 30px;
+    }
+
+    .brand h2 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .brand small {
+      color: #c9dfd9;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      color: #9fc3bb;
+      margin: 18px 9px 7px;
+      font-weight: bold;
+    }
+
+    .nav button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: #dcebe7;
+      text-align: left;
+      padding: 11px 10px;
+      border-radius: 9px;
+      margin: 2px 0;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      background: #28584f;
+      color: #fff;
+    }
+
+    .ico {
+      display: inline-block;
+      width: 25px;
+    }
+
+    .side-note {
+      margin: 25px 5px;
+      padding: 12px;
+      background: #214b43;
+      border-radius: 10px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: #d8ebe6;
+    }
+
+    .side-note strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .main {
+      margin-left: 245px;
+      width: calc(100% - 245px);
+    }
+
+    .topbar {
+      height: 66px;
+      background: #fff;
+      border-bottom: 1px solid #e4e8ee;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 25px;
+    }
+
+    .crumb {
+      color: #75818b;
+      font-size: 13px;
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 12px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e7f2ee;
+      display: grid;
+      place-items: center;
+      font-size: 19px;
+    }
+
+    .content {
+      padding: 24px;
+      max-width: 1250px;
+      margin: auto;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .heading,
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .heading h1 {
+      margin: 0 0 5px;
+      font-size: 25px;
+    }
+
+    .heading p {
+      margin: 0;
+      color: #7b8790;
+      font-size: 13px;
+    }
+
+    .btn {
+      border: 0;
+      background: #287b66;
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background: #216653;
+    }
+
+    .btn.light {
+      background: #eaf3f0;
+      color: #246b59;
+    }
+
+    .btn.small {
+      padding: 7px 10px;
+      font-size: 12px;
+    }
+
+    .hero {
+      background: #dcefe9;
+      border-radius: 15px;
+      padding: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hero h2 {
+      font-size: 27px;
+      margin: 7px 0 9px;
+    }
+
+    .hero p {
+      max-width: 650px;
+      color: #60716d;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      color: #287b66;
+      font-weight: bold;
+    }
+
+    .hero-art {
+      font-size: 75px;
+    }
+
+    .searchbar {
+      display: flex;
+      max-width: 650px;
+    }
+
+    .searchbar input {
+      flex: 1;
+      padding: 11px;
+      border: 1px solid #cbd8d4;
+      border-radius: 8px 0 0 8px;
+    }
+
+    .searchbar .btn {
+      border-radius: 0 8px 8px 0;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 13px;
+      margin: 20px 0;
+    }
+
+    .stat {
+      background: #fff;
+      border: 1px solid #e7ebef;
+      border-radius: 11px;
+      padding: 15px;
+    }
+
+    .stat small {
+      color: #829099;
+      font-size: 11px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      margin-top: 5px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #e6eaee;
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .section-head span {
+      font-size: 11px;
+      color: #88939a;
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-top: 14px;
+    }
+
+    .book {
+      border: 1px solid #e5e9ec;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .cover {
+      height: 120px;
+      background: #e8f0ed;
+      display: grid;
+      place-items: center;
+      font-size: 43px;
+    }
+
+    .book-body {
+      padding: 12px;
+    }
+
+    .book-body h4 {
+      margin: 0 0 5px;
+      font-size: 14px;
+    }
+
+    .book-body p {
+      margin: 0;
+      color: #7a858d;
+      font-size: 11px;
+    }
+
+    .book-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 11px;
+    }
+
+    .tag {
+      padding: 4px 7px;
+      border-radius: 10px;
+      background: #e9f5ef;
+      color: #287b66;
+    }
+
+    .actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .actions button {
+      border: 1px solid #dbe3e0;
+      background: #fff;
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 10px;
+    }
+
+    .actions .danger {
+      color: #a53e3e;
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .quick {
+      border: 1px solid #e7ecea;
+      border-radius: 9px;
+      padding: 13px;
+      font-size: 12px;
+    }
+
+    .quick small {
+      display: block;
+      color: #7d888d;
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+
+    .text-btn {
+      border: 0;
+      background: none;
+      color: #287b66;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 0;
+    }
+
+    .filters {
+      display: flex;
+      gap: 9px;
+      margin-bottom: 13px;
+    }
+
+    .filters input,
+    .filters select,
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 9px;
+      border: 1px solid #d7dfe3;
+      border-radius: 7px;
+      background: #fff;
+    }
+
+    .filters input {
+      flex: 1;
+    }
+
+    .filters select {
+      max-width: 190px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+    }
+
+    .table-wrap table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .table-wrap th,
+    .table-wrap td {
+      padding: 10px;
+      border-bottom: 1px solid #edf0f2;
+      text-align: left;
+    }
+
+    .table-wrap th {
+      color: #718087;
+      background: #fafbfb;
+    }
+
+    .table-btn {
+      border: 1px solid #dce4e1;
+      background: #fff;
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 10px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #8a969c;
+      padding: 25px;
+      font-size: 12px;
+    }
+
+    .bar-row {
+      margin: 12px 0;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .bar {
+      height: 8px;
+      background: #edf1f0;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: #4e927e;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .member-actions {
+      white-space: nowrap;
+    }
+
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 30, 28, 0.45);
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .modal-bg.show {
+      display: flex;
+    }
+
+    .modal {
+      background: #fff;
+      width: min(600px, 100%);
+      border-radius: 12px;
+      padding: 20px;
+      max-height: 90vh;
+      overflow: auto;
+    }
+
+    .modal h3 {
+      margin: 0 0 15px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 17px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .danger-btn {
+      background: #a94343 !important;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #183d36;
+      color: #fff;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      display: none;
+      z-index: 40;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #173b35, #287b66);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .login-card {
+      width: min(420px, 100%);
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .login-logo {
+      text-align: center;
+      font-size: 45px;
+    }
+
+    .login-card h1 {
+      text-align: center;
+      margin: 8px 0 3px;
+      font-size: 22px;
+    }
+
+    .login-card .sub {
+      text-align: center;
+      color: #78858b;
+      font-size: 12px;
+      margin-bottom: 22px;
+    }
+
+    .login-field {
+      margin-bottom: 13px;
+    }
+
+    .login-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .login-field input {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #d5dfe0;
+      border-radius: 8px;
+    }
+
+    .login-btn {
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .login-error {
+      display: none;
+      color: #a43d3d;
+      background: #fff0f0;
+      padding: 9px;
+      border-radius: 7px;
+      font-size: 11px;
+      margin-bottom: 12px;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+
+    .demo {
+      font-size: 10px;
+      text-align: center;
+      color: #899398;
+      margin-top: 12px;
+    }
+
+    .mobile-menu {
+      display: none;
+      border: 0;
+      background: none;
+      font-size: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-100%);
+        z-index: 30;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main {
+        margin-left: 0;
+        width: 100%;
+      }
+      .mobile-menu {
+        display: block;
+      }
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+      .book-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .hero-art {
+        display: none;
+      }
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .content {
+        padding: 14px;
+      }
+      .topbar {
+        padding: 0 14px;
+      }
+      .book-grid,
+      .quick-links {
+        grid-template-columns: 1fr;
+      }
+      .filters {
+        flex-direction: column;
+      }
+      .filters select {
+        max-width: none;
+      }
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+      .field.full {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen Login -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-logo">📚</div>
+      <h1>Perpustakaan SDN Pisangan 01</h1>
+      <div class="sub">Silakan masuk sebagai admin/petugas perpustakaan</div>
+      <div class="login-error" id="loginError">Username atau password salah.</div>
+      <div class="login-field">
+        <label>Username</label>
+        <input id="loginUsername" autocomplete="username" placeholder="Masukkan username">
+      </div>
+      <div class="login-field">
+        <label>Password</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Masukkan password">
+      </div>
+      <button class="btn login-btn" id="loginBtn">Masuk ke Sistem</button>
+    </div>
+  </div>
+
+  <!-- Aplikasi Utama -->
+  <div class="app" id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">📚</div>
+        <div>
+          <h2>Perpustakaan</h2>
+          <small>SDN Pisangan 01</small>
+        </div>
+      </div>
+      <div class="nav-label">MENU UTAMA</div>
+      <nav class="nav">
+        <button class="active" data-page="home">⌂ &nbsp; Beranda</button>
+        <button data-page="catalog">▤ &nbsp; Katalog Buku</button>
+        <button data-page="loans">⇄ &nbsp; Peminjaman & Pengembalian</button>
+        <button data-page="reports">▥ &nbsp; Laporan</button>
+      </nav>
+      <div class="nav-label">PENGELOLAAN</div>
+      <nav class="nav">
+        <button data-page="members">♙ &nbsp; Data Anggota</button>
+        <button data-page="admins">⚙ &nbsp; Admin & Pengguna</button>
+        <button data-page="settings">☷ &nbsp; Pengaturan</button>
+      </nav>
+      <div class="side-note">
+        <strong>🌟 Ayo gemar membaca!</strong>“Buku adalah jendela dunia.”
+      </div>
+      <button class="btn danger-btn" id="logoutBtn" style="width:100%;margin-top:10px">Keluar</button>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="main">
+      <header class="topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="mobile-menu" id="mobileMenu">☰</button>
+          <div class="crumb">Perpustakaan / <strong id="crumb">Beranda</strong></div>
+        </div>
+        <div class="user">
+          <div class="avatar">👩🏻‍🏫</div>
+          <div>
+            <b id="topAdminName">Petugas Perpustakaan</b><br>
+            <span style="color:#7b8790" id="topAdminRole">Admin · SDN Pisangan 01</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Halaman Beranda -->
+        <section class="page active" id="page-home">
+          <div class="hero">
+            <div>
+              <div class="eyebrow">Tempat belajar & bertumbuh</div>
+              <h2>Selamat datang di<br>Perpustakaan SDN Pisangan 01!</h2>
+              <p>Kelola koleksi buku, anggota, peminjaman, laporan, dan data admin dari satu sistem.</p>
+              <div class="searchbar">
+                <input id="homeSearch" placeholder="Cari judul atau penulis buku...">
+                <button class="btn" id="homeSearchBtn">⌕ Cari</button>
+              </div>
+            </div>
+            <div class="hero-art">📚🌱</div>
+          </div>
+          <div class="stats" id="homeStats"></div>
+          <div class="section-head">
+            <h3>📖 Buku Pilihan</h3>
+            <button class="btn light small" data-goto="catalog">Lihat semua buku →</button>
+          </div>
+          <div class="book-grid" id="featuredBooks"></div>
+          <div class="panel">
+            <div class="section-head">
+              <h3>✨ Akses Cepat</h3>
+              <span>Kelola perpustakaan dengan mudah</span>
+            </div>
+            <div class="quick-links">
+              <div class="quick">
+                📚<br><b>Tambah koleksi buku</b>
+                <small>Masukkan buku baru ke katalog.</small>
+                <button class="text-btn" id="quickAddBook">+ Tambah Buku</button>
+              </div>
+              <div class="quick">
+                🤝<br><b>Catat peminjaman</b>
+                <small>Kelola peminjaman dan pengembalian.</small>
+                <button class="text-btn" data-goto="loans">Buka transaksi</button>
+              </div>
+              <div class="quick">
+                ⚙<br><b>Kelola sistem</b>
+                <small>Ubah data admin dan pengaturan.</small>
+                <button class="text-btn" data-goto="settings">Buka pengaturan</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Halaman Katalog Buku -->
+        <section class="page" id="page-catalog">
+          <div class="heading">
+            <div>
+              <h1>Katalog Buku 📚</h1>
+              <p>Tambah, ubah, dan hapus data buku.</p>
+            </div>
+            <button class="btn" id="addBookBtn">＋ Tambah Buku</button>
+          </div>
+          <div class="panel">
+            <div class="filters">
+              <input id="catalogSearch" placeholder="🔎 Cari judul atau penulis...">
+              <select id="categoryFilter">
+                <option value="">Semua kategori</option>
+                <option>Pelajaran</option>
+                <option>Fiksi</option>
+                <option>Referensi</option>
+                <option>Dongeng</option>
+              </select>
+              <select id="availabilityFilter">
+                <option value="">Semua status</option>
+                <option value="available">Tersedia</option>
+                <option value="empty">Habis dipinjam</option>
+              </select>
+            </div>
+            <div class="book-grid" id="catalogBooks"></div>
+            <div id="catalogEmpty" class="empty" style="display:none">Buku tidak ditemukan.</div>
+          </div>
+        </section>
+
+        <!-- Halaman Peminjaman & Pengembalian -->
+        <section class="page" id="page-loans">
+          <div class="heading">
+            <div>
+              <h1>Peminjaman & Pengembalian ↔</h1>
+              <p>Kelola seluruh transaksi buku.</p>
+            </div>
+            <button class="btn" id="newLoanBtn">＋ Peminjaman Baru</button>
+          </div>
+          <div class="stats" id="loanStats"></div>
+          <div class="panel">
+            <div class="section-head">
+              <h3>Daftar Transaksi</h3>
+              <span id="loanCount"></span>
+            </div>
+            <div class="filters">
+              <input id="loanSearch" placeholder="Cari siswa atau buku...">
+              <select id="loanStatusFilter">
+                <option value="">Semua status</option>
+                <option>Dipinjam</option>
+                <option>Terlambat</option>
+                <option>Dikembalikan</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nama siswa</th>
+                    <th>Buku</th>
+                    <th>Pinjam</th>
+                    <th>Batas kembali</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="loanRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Halaman Laporan -->
+        <section class="page" id="page-reports">
+          <div class="heading">
+            <div>
+              <h1>Laporan Perpustakaan 📊</h1>
+              <p>Ringkasan koleksi dan aktivitas perpustakaan.</p>
+            </div>
+            <button class="btn" id="exportBtn">⇩ Unduh CSV</button>
+          </div>
+          <div class="stats" id="reportStats"></div>
+          <div class="two-col">
+            <div class="panel">
+              <div class="section-head">
+                <h3>Kategori buku</h3>
+                <span>Jumlah judul</span>
+              </div>
+              <div id="categoryBars"></div>
+            </div>
+            <div class="panel">
+              <div class="section-head">
+                <h3>Status transaksi</h3>
+              </div>
+              <div id="statusBars"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Halaman Data Anggota -->
+        <section class="page" id="page-members">
+          <div class="heading">
+            <div>
+              <h1>Data Anggota 👥</h1>
+              <p>Tambah, ubah, dan hapus anggota perpustakaan.</p>
+            </div>
+            <button class="btn" id="addMemberBtn">＋ Tambah Anggota</button>
+          </div>
+          <div class="panel">
+            <div class="filters">
+              <input id="memberSearch" placeholder="Cari nama anggota...">
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nama</th>
+                    <th>Kelas</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="memberRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Halaman Admin & Pengguna -->
+        <section class="page" id="page-admins">
+          <div class="heading">
+            <div>
+              <h1>Admin & Pengguna ⚙</h1>
+              <p>Kelola akun yang dapat masuk ke sistem.</p>
+            </div>
+            <button class="btn" id="addAdminBtn">＋ Tambah Admin</button>
+          </div>
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nama</th>
+                    <th>Username</th>
+                    <th>Peran</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="adminRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Halaman Pengaturan -->
+        <section class="page" id="page-settings">
+          <div class="heading">
+            <div>
+              <h1>Pengaturan Sistem ⚙</h1>
+              <p>Ubah identitas perpustakaan dan akun admin yang sedang digunakan.</p>
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="panel">
+              <h3>Identitas Perpustakaan</h3>
+              <div class="field-grid" style="margin-top:15px">
+                <div class="field full">
+                  <label>Nama perpustakaan</label>
+                  <input id="setLibraryName">
+                </div>
+                <div class="field">
+                  <label>Nama sekolah</label>
+                  <input id="setSchoolName">
+                </div>
+                <div class="field">
+                  <label>Lokasi</label>
+                  <input id="setLocation">
+                </div>
+              </div>
+              <div class="modal-actions">
+                <button class="btn" id="saveLibrarySettings">Simpan Pengaturan</button>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>Akun Saya</h3>
+              <div class="field-grid" style="margin-top:15px">
+                <div class="field full">
+                  <label>Nama admin</label>
+                  <input id="setAdminName">
+                </div>
+                <div class="field">
+                  <label>Username</label>
+                  <input id="setAdminUsername">
+                </div>
+                <div class="field">
+                  <label>Password baru</label>
+                  <input id="setAdminPassword" type="password" placeholder="Kosongkan jika tidak diubah">
+                </div>
+              </div>
+              <div class="modal-actions">
+                <button class="btn" id="saveAccountSettings">Simpan Akun</button>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Data Sistem</h3>
+            <p style="font-size:12px;color:#7d888d">Reset akan mengembalikan buku, anggota, transaksi, dan akun ke data awal.</p>
+            <button class="btn danger-btn" id="resetDataBtn">Reset Data Awal</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Pop-up -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Firebase SDK versi CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <!-- JavaScript Logika Aplikasi & Firebase -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8U1JUGqXsqi4YZ_aSxKtjawKt3kkaICU",
+      authDomain: "perpussdpistim01.firebaseapp.com",
+      databaseURL: "https://perpussdpistim01-default-rtdb.firebaseio.com",
+      projectId: "perpussdpistim01",
+      storageBucket: "perpussdpistim01.firebasestorage.app",
+      messagingSenderId: "53972535051",
+      appId: "1:53972535051:web:b29a2b700de1621a0ec40e"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const $ = id => document.getElementById(id);
+
+    const seed = {
+      books: [
+        { id: 1, title: "Laskar Pelangi", author: "Andrea Hirata", category: "Fiksi", stock: 4, total: 5, cover: "📕" },
+        { id: 2, title: "Matematika Kelas 5", author: "Tim Edukasi", category: "Pelajaran", stock: 6, total: 6, cover: "📘" },
+        { id: 3, title: "IPA untuk SD/MI Kelas 6", author: "Tim Edukasi", category: "Pelajaran", stock: 5, total: 5, cover: "📗" },
+        { id: 4, title: "Ensiklopedia Anak", author: "Penerbit Ilmu", category: "Referensi", stock: 3, total: 3, cover: "📙" },
+        { id: 5, title: "Kumpulan Dongeng Nusantara", author: "Tim Nusantara", category: "Dongeng", stock: 4, total: 4, cover: "📒" },
+        { id: 6, title: "Petualangan di Hutan", author: "Rani Putri", category: "Fiksi", stock: 2, total: 3, cover: "📔" }
+      ],
+      members: [
+        { id: "AG001", name: "Andi Pratama", kelas: "5A" },
+        { id: "AG002", name: "Siti Aisyah", kelas: "5B" },
+        { id: "AG003", name: "Budi Santoso", kelas: "4A" },
+        { id: "AG004", name: "Citra Lestari", kelas: "6A" },
+        { id: "AG005", name: "Dimas Saputra", kelas: "6B" }
+      ],
+      loans: [
+        { id: 101, student: "Andi Pratama", bookId: 1, borrow: "2026-10-15", due: "2026-10-22", status: "Dipinjam" },
+        { id: 102, student: "Siti Aisyah", bookId: 3, borrow: "2026-10-10", due: "2026-10-17", status: "Terlambat" },
+        { id: 103, student: "Budi Santoso", bookId: 5, borrow: "2026-10-16", due: "2026-10-23", status: "Dikembalikan" }
+      ],
+      admins: [{ id: 1, name: "Petugas Perpustakaan", username: "petugas", password: "perpus123", role: "Admin", status: "Aktif" }],
+      settings: { library: "Perpustakaan", school: "SDN Pisangan 01", location: "Jakarta Timur" }
+    };
+
+    let data = null, currentAdmin = null;
+
+    function clone(x) {
+      return JSON.parse(JSON.stringify(x));
+    }
+
+    function loadData() {
+      db.ref("perpus_data").on("value", snapshot => {
+        const val = snapshot.val();
+        if (!val || !Array.isArray(val.books) || !Array.isArray(val.admins)) {
+          data = clone(seed);
+          saveData();
+        } else {
+          data = val;
+          if (!data.settings) data.settings = clone(seed.settings);
+          if (!data.admins.some(a => a.username === "petugas")) data.admins.push(clone(seed.admins[0]));
+        }
+        const appEl = $("app");
+        if (appEl && appEl.classList.contains("show")) {
+          renderAll();
+        }
+      });
+    }
+
+    function saveData() {
+      db.ref("perpus_data").set(data);
+    }
+
+    function toast(msg) {
+      $("toast").textContent = msg;
+      $("toast").classList.add("show");
+      setTimeout(() => $("toast").classList.remove("show"), 2200);
+    }
+
+    function bookById(id) {
+      return data ? data.books.find(b => b.id === Number(id)) : null;
+    }
+
+    function navigate(page) {
+      document.querySelectorAll(".page").forEach(x => x.classList.remove("active"));
+      $("page-" + page).classList.add("active");
+      document.querySelectorAll("[data-page]").forEach(x => x.classList.toggle("active", x.dataset.page === page));
+      
+      const names = {
+        home: "Beranda",
+        catalog: "Katalog Buku",
+        loans: "Peminjaman & Pengembalian",
+        reports: "Laporan",
+        members: "Data Anggota",
+        admins: "Admin & Pengguna",
+        settings: "Pengaturan"
+      };
+      
+      $("crumb").textContent = names[page] || page;
+      renderAll();
+      $("sidebar").classList.remove("open");
+    }
+
+    function stat(label, value) {
+      return `<div class="stat"><small>${label}</small><strong>${value}</strong></div>`;
+    }
+
+    function renderHome() {
+      if (!data) return;
+      $("homeStats").innerHTML = 
+        stat("Total Judul Buku", data.books.length) +
+        stat("Total Eksemplar", data.books.reduce((s, b) => s + b.total, 0)) +
+        stat("Sedang Dipinjam", data.loans.filter(l => l.status !== "Dikembalikan").length) +
+        stat("Total Anggota", data.members.length);
+      $("featuredBooks").innerHTML = data.books.slice(0, 4).map(bookCard).join("");
+    }
+
+    function bookCard(b) {
+      const status = b.stock > 0 ? "Tersedia" : "Habis";
+      return `<div class="book">
+        <div class="cover">${b.cover || "📚"}</div>
+        <div class="book-body">
+          <h4>${b.title}</h4>
+          <p>${b.author}</p>
+          <p>${b.category}</p>
+          <div class="book-foot">
+            <span class="tag">${status}</span>
+            <span>${b.stock}/${b.total}</span>
+          </div>
+          <div class="actions">
+            <button onclick="editBook(${b.id})">✎ Ubah</button>
+            <button class="danger" onclick="deleteBook(${b.id})">🗑 Hapus</button>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function renderCatalog() {
+      if (!data) return;
+      const q = $("catalogSearch").value.toLowerCase();
+      const cat = $("categoryFilter").value;
+      const av = $("availabilityFilter").value;
+      
+      const arr = data.books.filter(b => 
+        (!q || b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q)) &&
+        (!cat || b.category === cat) &&
+        (!av || (av === "available" ? b.stock > 0 : b.stock === 0))
+      );
+      
+      $("catalogBooks").innerHTML = arr.map(bookCard).join("");
+      $("catalogEmpty").style.display = arr.length ? "none" : "block";
+    }
+
+    function renderLoans() {
+      if (!data) return;
+      const q = $("loanSearch").value.toLowerCase();
+      const st = $("loanStatusFilter").value;
+      
+      const arr = data.loans.filter(l => 
+        (!q || l.student.toLowerCase().includes(q) || (bookById(l.bookId)?.title || "").toLowerCase().includes(q)) &&
+        (!st || l.status === st)
+      );
+      
+      $("loanRows").innerHTML = arr.map(l => `<tr>
+        <td>${l.student}</td>
+        <td>${bookById(l.bookId)?.title || "-"}</td>
+        <td>${l.borrow}</td>
+        <td>${l.due}</td>
+        <td><span class="tag">${l.status}</span></td>
+        <td class="member-actions">
+          ${l.status !== "Dikembalikan" ? `<button class="table-btn" onclick="returnLoan(${l.id})">Kembalikan</button>` : ""}
+          <button class="table-btn" onclick="editLoan(${l.id})">Ubah</button>
+          <button class="table-btn" onclick="deleteLoan(${l.id})">Hapus</button>
+        </td>
+      </tr>`).join("");
+      
+      $("loanCount").textContent = arr.length + " transaksi";
+      $("loanStats").innerHTML = 
+        stat("Dipinjam", data.loans.filter(l => l.status === "Dipinjam").length) +
+        stat("Terlambat", data.loans.filter(l => l.status === "Terlambat").length) +
+        stat("Dikembalikan", data.loans.filter(l => l.status === "Dikembalikan").length) +
+        stat("Total", data.loans.length);
+    }
+
+    function renderMembers() {
+      if (!data) return;
+      const q = $("memberSearch").value.toLowerCase();
+      $("memberRows").innerHTML = data.members
+        .filter(m => m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q))
+        .map(m => `<tr>
+          <td>${m.id}</td>
+          <td>${m.name}</td>
+          <td>${m.kelas}</td>
+          <td>
+            <button class="table-btn" onclick="editMember('${m.id}')">Ubah</button>
+            <button class="table-btn" onclick="deleteMember('${m.id}')">Hapus</button>
+          </td>
+        </tr>`).join("");
+    }
+
+    function renderReports() {
+      if (!data) return;
+      const total = data.books.reduce((s, b) => s + b.total, 0);
+      const available = data.books.reduce((s, b) => s + b.stock, 0);
+      
+      $("reportStats").innerHTML = 
+        stat("Judul Buku", data.books.length) +
+        stat("Eksemplar", total) +
+        stat("Tersedia", available) +
+        stat("Anggota", data.members.length);
+        
+      const cats = {};
+      data.books.forEach(b => cats[b.category] = (cats[b.category] || 0) + 1);
+      const max = Math.max(1, ...Object.values(cats));
+      
+      $("categoryBars").innerHTML = Object.entries(cats).map(([k, v]) => `
+        <div class="bar-row">
+          <div class="bar-label"><span>${k}</span><b>${v}</b></div>
+          <div class="bar"><i style="width:${(v / max) * 100}%"></i></div>
+        </div>
+      `).join("");
+      
+      const sts = {
+        Dipinjam: data.loans.filter(l => l.status === "Dipinjam").length,
+        Terlambat: data.loans.filter(l => l.status === "Terlambat").length,
+        Dikembalikan: data.loans.filter(l => l.status === "Dikembalikan").length
+      };
+      
+      $("statusBars").innerHTML = Object.entries(sts).map(([k, v]) => `
+        <div class="bar-row">
+          <div class="bar-label"><span>${k}</span><b>${v}</b></div>
+          <div class="bar"><i style="width:${Math.min(100, (v / Math.max(1, data.loans.length)) * 100)}%"></i></div>
+        </div>
+      `).join("");
+    }
+
+    function renderAdmins() {
+      if (!data) return;
+      $("adminRows").innerHTML = data.admins.map(a => `<tr>
+        <td>${a.name}</td>
+        <td>${a.username}</td>
+        <td>${a.role}</td>
+        <td>${a.status}</td>
+        <td>
+          <button class="table-btn" onclick="editAdmin(${a.id})">Ubah</button>
+          <button class="table-btn" onclick="deleteAdmin(${a.id})">Hapus</button>
+        </td>
+      </tr>`).join("");
+    }
+
+    function renderSettings() {
+      if (!data) return;
+      $("setLibraryName").value = data.settings.library;
+      $("setSchoolName").value = data.settings.school;
+      $("setLocation").value = data.settings.location;
+      
+      if (currentAdmin) {
+        $("setAdminName").value = currentAdmin.name;
+        $("setAdminUsername").value = currentAdmin.username;
+        $("topAdminName").textContent = currentAdmin.name;
+        $("topAdminRole").textContent = currentAdmin.role + " · " + data.settings.school;
+      }
+    }
+
+    function renderAll() {
+      renderHome();
+      renderCatalog();
+      renderLoans();
+      renderMembers();
+      renderReports();
+      renderAdmins();
+      renderSettings();
+    }
+
+    function openModal(title, body, onSave) {
+      $("modalBody").innerHTML = `
+        <h3>${title}</h3>
+        ${body}
+        <div class="modal-actions">
+          <button class="btn light" onclick="closeModal()">Batal</button>
+          <button class="btn" id="modalSave">Simpan</button>
+        </div>
+      `;
+      $("modalBg").classList.add("show");
+      $("modalSave").onclick = onSave;
+    }
+
+    function closeModal() {
+      $("modalBg").classList.remove("show");
+    }
+
+    function openBookForm(id = null) {
+      const b = id ? bookById(id) : { title: "", author: "", category: "Pelajaran", total: 1, stock: 1, cover: "📚" };
+      
+      openModal(
+        id ? "Ubah Data Buku" : "Tambah Buku",
+        `<div class="field-grid">
+          <div class="field full"><label>Judul buku</label><input id="fTitle" value="${b.title}"></div>
+          <div class="field"><label>Penulis</label><input id="fAuthor" value="${b.author}"></div>
+          <div class="field">
+            <label>Kategori</label>
+            <select id="fCategory">
+              ${["Pelajaran", "Fiksi", "Referensi", "Dongeng"].map(x => `<option ${x === b.category ? "selected" : ""}>${x}</option>`).join("")}
+            </select>
+          </div>
+          <div class="field"><label>Total eksemplar</label><input id="fTotal" type="number" min="1" value="${b.total}"></div>
+          <div class="field"><label>Stok tersedia</label><input id="fStock" type="number" min="0" value="${b.stock}"></div>
+        </div>`,
+        () => {
+          const title = $("fTitle").value.trim();
+          const author = $("fAuthor").value.trim();
+          const total = Number($("fTotal").value);
+          const stock = Number($("fStock").value);
+          
+          if (!title || !author || total < 1 || stock < 0 || stock > total) return toast("Data buku belum benar.");
+          
+          if (id) {
+            Object.assign(b, { title, author, category: $("fCategory").value, total, stock });
+          } else {
+            data.books.push({
+              id: Math.max(0, ...data.books.map(x => x.id)) + 1,
+              title, author, category: $("fCategory").value, total, stock, cover: "📚"
+            });
+          }
+          
+          saveData();
+          closeModal();
+          toast(id ? "Data buku berhasil diubah." : "Buku berhasil ditambahkan.");
+        }
+      );
+    }
+
+    function editBook(id) {
+      openBookForm(id);
+    }
+
+    function deleteBook(id) {
+      if (data.loans.some(l => l.bookId === id && l.status !== "Dikembalikan")) return toast("Buku masih dipinjam, tidak dapat dihapus.");
+      if (confirm("Hapus buku ini?")) {
+        data.books = data.books.filter(b => b.id !== id);
+        saveData();
+        toast("Buku berhasil dihapus.");
+      }
+    }
+
+    function openMemberForm(id = null) {
+      const m = id ? data.members.find(x => x.id === id) : { name: "", kelas: "1A" };
+      
+      openModal(
+        id ? "Ubah Anggota" : "Tambah Anggota",
+        `<div class="field-grid">
+          <div class="field full"><label>Nama anggota</label><input id="fMemberName" value="${m.name}"></div>
+          <div class="field">
+            <label>Kelas</label>
+            <select id="fClass">
+              ${["1A","1B","2A","2B","3A","3B","4A","4B","5A","5B","6A","6B"].map(x => `<option ${x === m.kelas ? "selected" : ""}>${x}</option>`).join("")}
+            </select>
+          </div>
+        </div>`,
+        () => {
+          const name = $("fMemberName").value.trim();
+          if (!name) return toast("Nama wajib diisi.");
+          
+          if (id) {
+            m.name = name;
+            m.kelas = $("fClass").value;
+          } else {
+            data.members.push({ id: "AG" + String(data.members.length + 1).padStart(3, "0"), name, kelas: $("fClass").value });
+          }
+          
+          saveData();
+          closeModal();
+          toast(id ? "Anggota diubah." : "Anggota ditambahkan.");
+        }
+      );
+    }
+
+    function editMember(id) {
+      openMemberForm(id);
+    }
+
+    function deleteMember(id) {
+      if (data.loans.some(l => l.student === data.members.find(m => m.id === id)?.name && l.status !== "Dikembalikan")) return toast("Anggota masih memiliki peminjaman.");
+      if (confirm("Hapus anggota ini?")) {
+        data.members = data.members.filter(m => m.id !== id);
+        saveData();
+        toast("Anggota dihapus.");
+      }
+    }
+
+    function openLoanForm(id = null) {
+      const l = id ? data.loans.find(x => x.id === id) : { student: "", bookId: data.books[0]?.id || "", borrow: "2026-10-21", due: "2026-10-28", status: "Dipinjam" };
+      const options = data.books.map(b => `<option value="${b.id}" ${Number(b.id) === Number(l.bookId) ? "selected" : ""}>${b.title}</option>`).join("");
+      
+      openModal(
+        id ? "Ubah Transaksi" : "Peminjaman Baru",
+        `<div class="field-grid">
+          <div class="field full"><label>Nama siswa</label><input id="fStudent" value="${l.student}"></div>
+          <div class="field full"><label>Buku</label><select id="fBook">${options}</select></div>
+          <div class="field"><label>Tanggal pinjam</label><input id="fBorrow" type="date" value="${l.borrow}"></div>
+          <div class="field"><label>Batas kembali</label><input id="fDue" type="date" value="${l.due}"></div>
+          <div class="field">
+            <label>Status</label>
+            <select id="fStatus">
+              <option ${l.status === "Dipinjam" ? "selected" : ""}>Dipinjam</option>
+              <option ${l.status === "Terlambat" ? "selected" : ""}>Terlambat</option>
+              <option ${l.status === "Dikembalikan" ? "selected" : ""}>Dikembalikan</option>
+            </select>
+          </div>
+        </div>`,
+        () => {
+          const student = $("fStudent").value.trim();
+          const bookId = Number($("fBook").value);
+          if (!student) return toast("Nama siswa wajib diisi.");
+          
+          if (id) {
+            Object.assign(l, { student, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: $("fStatus").value });
+          } else {
+            const b = bookById(bookId);
+            if (!b || b.stock < 1) return toast("Stok buku habis.");
+            b.stock--;
+            data.loans.push({
+              id: Math.max(100, ...data.loans.map(x => x.id)) + 1,
+              student, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: $("fStatus").value
+            });
+          }
+          
+          saveData();
+          closeModal();
+          toast(id ? "Transaksi diubah." : "Peminjaman dicatat.");
+        }
+      );
+    }
+
+    function editLoan(id) {
+      openLoanForm(id);
+    }
+
+    function returnLoan(id) {
+      const l = data.loans.find(x => x.id === id);
+      if (!l) return;
+      const b = bookById(l.bookId);
+      if (l.status !== "Dikembalikan" && b) b.stock = Math.min(b.total, b.stock + 1);
+      l.status = "Dikembalikan";
+      saveData();
+      toast("Buku berhasil dikembalikan.");
+    }
+
+    function deleteLoan(id) {
+      if (confirm("Hapus transaksi ini?")) {
+        const l = data.loans.find(x => x.id === id);
+        if (l && l.status !== "Dikembalikan") {
+          const b = bookById(l.bookId);
+          if (b) b.stock = Math.min(b.total, b.stock + 1);
+        }
+        data.loans = data.loans.filter(x => x.id !== id);
+        saveData();
+        toast("Transaksi dihapus.");
+      }
+    }
+
+    function openAdminForm(id = null) {
+      const a = id ? data.admins.find(x => x.id === id) : { name: "", username: "", password: "", role: "Petugas", status: "Aktif" };
+      
+      openModal(
+        id ? "Ubah Admin" : "Tambah Admin",
+        `<div class="field-grid">
+          <div class="field full"><label>Nama</label><input id="fAdminName" value="${a.name}"></div>
+          <div class="field"><label>Username</label><input id="fAdminUser" value="${a.username}"></div>
+          <div class="field"><label>Password ${id ? "(kosong = tetap)" : "baru"}</label><input id="fAdminPass" type="password"></div>
+          <div class="field">
+            <label>Peran</label>
+            <select id="fAdminRole">
+              <option ${a.role === "Admin" ? "selected" : ""}>Admin</option>
+              <option ${a.role === "Petugas" ? "selected" : ""}>Petugas</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="fAdminStatus">
+              <option ${a.status === "Aktif" ? "selected" : ""}>Aktif</option>
+              <option ${a.status === "Nonaktif" ? "selected" : ""}>Nonaktif</option>
+            </select>
+          </div>
+        </div>`,
+        () => {
+          const name = $("fAdminName").value.trim();
+          const username = $("fAdminUser").value.trim();
+          const pass = $("fAdminPass").value;
+          
+          if (!name || !username || (!id && !pass)) return toast("Data admin belum lengkap.");
+          if (data.admins.some(x => x.username === username && (!id || x.id !== id))) return toast("Username sudah digunakan.");
+          
+          if (id) {
+            a.name = name;
+            a.username = username;
+            a.role = $("fAdminRole").value;
+            a.status = $("fAdminStatus").value;
+            if (pass) a.password = pass;
+            if (currentAdmin && currentAdmin.id === id) currentAdmin = a;
+          } else {
+            data.admins.push({
+              id: Math.max(0, ...data.admins.map(x => x.id)) + 1,
+              name, username, password: pass, role: $("fAdminRole").value, status: $("fAdminStatus").value
+            });
+          }
+          
+          saveData();
+          closeModal();
+          toast(id ? "Admin diubah." : "Admin ditambahkan.");
+        }
+      );
+    }
+
+    function editAdmin(id) {
+      openAdminForm(id);
+    }
+
+    function deleteAdmin(id) {
+      if (data.admins.length <= 1) return toast("Minimal harus ada satu admin.");
+      if (currentAdmin && currentAdmin.id === id) return toast("Akun yang sedang digunakan tidak dapat dihapus.");
+      if (confirm("Hapus admin ini?")) {
+        data.admins = data.admins.filter(a => a.id !== id);
+        saveData();
+        toast("Admin dihapus.");
+      }
+    }
+
+    function doLogin() {
+      const u = $("loginUsername").value.trim();
+      const p = $("loginPassword").value;
+      const a = data ? data.admins.find(x => x.username === u && x.password === p && x.status === "Aktif") : null;
+      
+      if (!a) {
+        $("loginError").classList.add("show");
+        return;
+      }
+      
+      currentAdmin = a;
+      $("loginError").classList.remove("show");
+      $("loginScreen").style.display = "none";
+      $("app").classList.add("show");
+      renderAll();
+      toast("Login berhasil.");
+    }
+
+    function logout() {
+      currentAdmin = null;
+      $("app").classList.remove("show");
+      $("loginScreen").style.display = "flex";
+      $("loginUsername").value = "";
+      $("loginPassword").value = "";
+    }
+
+    // Inisialisasi awal listener database
+    loadData();
+
+    document.querySelectorAll("[data-page]").forEach(b => b.addEventListener("click", () => navigate(b.dataset.page)));
+    document.querySelectorAll("[data-goto]").forEach(b => b.addEventListener("click", () => navigate(b.dataset.goto)));
+
+    $("loginBtn").addEventListener("click", doLogin);
+    $("loginPassword").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+    $("loginUsername").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+
+    $("logoutBtn").addEventListener("click", logout);
+    $("mobileMenu").addEventListener("click", () => $("sidebar").classList.toggle("open"));
+
+    $("addBookBtn").addEventListener("click", () => openBookForm());
+    $("quickAddBook").addEventListener("click", () => openBookForm());
+    $("newLoanBtn").addEventListener("click", () => openLoanForm());
+    $("addMemberBtn").addEventListener("click", () => openMemberForm());
+    $("addAdminBtn").addEventListener("click", () => openAdminForm());
+
+    $("catalogSearch").addEventListener("input", renderCatalog);
+    $("categoryFilter").addEventListener("change", renderCatalog);
+    $("availabilityFilter").addEventListener("change", renderCatalog);
+
+    $("loanSearch").addEventListener("input", renderLoans);
+    $("loanStatusFilter").addEventListener("change", renderLoans);
+
+    $("memberSearch").addEventListener("input", renderMembers);
+
+    $("saveLibrarySettings").addEventListener("click", () => {
+      data.settings.library = $("setLibraryName").value;
+      data.settings.school = $("setSchoolName").value;
+      data.settings.location = $("setLocation").value;
+      saveData();
+      toast("Pengaturan disimpan.");
+    });
+
+    $("saveAccountSettings").addEventListener("click", () => {
+      if (currentAdmin) {
+        currentAdmin.name = $("setAdminName").value;
+        currentAdmin.username = $("setAdminUsername").value;
+        if ($("setAdminPassword").value) currentAdmin.password = $("setAdminPassword").value;
+        saveData();
+        toast("Akun disimpan.");
+      }
+    });
+
+    $("resetDataBtn").addEventListener("click", () => {
+      if (confirm("Kembalikan seluruh data ke awal?")) {
+        data = clone(seed);
+        saveData();
+        toast("Data di-reset.");
+      }
+    });
+  </script>
+</body>
+</html>
