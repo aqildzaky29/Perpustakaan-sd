@@ -829,14 +829,9 @@
               <select id="categoryFilter">
                 <option value="">Semua kategori</option>
                 <option>Pelajaran</option>
-                <option>Agama</option>
-                <option>Pancasila / Kewarganegaraan</option>
-                <option>Bahasa & Sastra</option>
-                <option>Matematika</option>
-                <option>Sains / IPA</option>
-                <option>Sosial / IPS</option>
-                <option>Kesenian & Olahraga</option>
-                <option>Koleksi Umum</option>
+                <option>Fiksi</option>
+                <option>Referensi</option>
+                <option>Dongeng</option>
               </select>
               <select id="availabilityFilter">
                 <option value="">Semua status</option>
@@ -1067,15 +1062,46 @@
 
     const seed = {
       books: [
-        { id: 1, title: "Buku Agama Islam (Pendidikan Agama Islam)", author: "Departemen Agama / Kemendikbud", category: "Agama", stock: 520, total: 520, cover: "📖" },
-        { id: 2, title: "Buku Pendidikan Pancasila dan Kewarganegaraan (PPKn)", author: "Kemendikbud", category: "Pancasila / Kewarganegaraan", stock: 450, total: 450, cover: "📘" },
-        { id: 3, title: "Buku Bahasa Indonesia SD", author: "Tim Penulis Kemendikbud", category: "Bahasa & Sastra", stock: 610, total: 610, cover: "📗" },
-        { id: 4, title: "Buku Matematika SD", author: "Tim Penulis Matematika", category: "Matematika", stock: 580, total: 580, cover: "📙" },
-        { id: 5, title: "Buku Ilmu Pengetahuan Alam (IPA)", author: "Tim IPA SD", category: "Sains / IPA", stock: 490, total: 490, cover: "🔬" },
-        { id: 6, title: "Buku Ilmu Pengetahuan Sosial (IPS)", author: "Tim IPS SD", category: "Sosial / IPS", stock: 470, total: 470, cover: "🌍" },
-        { id: 7, title: "Buku Seni Budaya dan Prakarya (SBdP)", author: "Tim Seni Budaya", category: "Kesenian & Olahraga", stock: 350, total: 350, cover: "🎨" },
-        { id: 8, title: "Buku PJOK (Pendidikan Jasmani, Olahraga & Kesehatan)", author: "Tim PJOK", category: "Kesenian & Olahraga", stock: 380, total: 380, cover: "⚽" },
-        { id: 9, title: "Buku Cerita Rakyat & Pengetahuan Umum", author: "Berbagai Pengarang", category: "Koleksi Umum", stock: 230, total: 230, cover: "📚" }
+        { id: 1, title: "Buku Penghubung", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 640, cover: "📖" },
+        { id: 2, title: "Buku Huruf Sambung Tegak", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 256, cover: "📖" },
+        { id: 3, title: "Buku Media Penghubung", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 198, cover: "📖" },
+        { id: 4, title: "Buku Agama Islam", author: "Departemen Agama / Sekolah", category: "Pelajaran", stock: 197, cover: "📖" },
+        { id: 5, title: "Buku Tematik D", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 189, cover: "📖" },
+        { id: 6, title: "Buku Tematik C", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 189, cover: "📖" },
+        { id: 7, title: "Buku Saku", author: "Kemendikbud / Sekolah", category: "Referensi", stock: 158, cover: "📙" },
+        { id: 8, title: "Tematik B", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 152, cover: "📖" },
+        { id: 9, title: "T2 Bermain Dilingkunganku", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 136, cover: "📖" },
+        { id: 10, title: "T4 Hidup Bersih Dan Sehat", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 136, cover: "📖" },
+        { id: 11, title: "T1 Hidup Rukun", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 136, cover: "📖" },
+        { id: 12, title: "T3 Tugasku Sehari - Hari", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 136, cover: "📖" },
+        { id: 13, title: "T2 Kegemaranku", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 136, cover: "📖" },
+        { id: 14, title: "T1 Indahnya Kebersamaanku", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 135, cover: "📖" },
+        { id: 15, title: "T4 Keluargaku", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 135, cover: "📖" },
+        { id: 16, title: "T5 Pahlawanku", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 135, cover: "📖" },
+        { id: 17, title: "T3 Peduli Terhadap Makhluk Hidup", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 135, cover: "📖" },
+        { id: 18, title: "T2 Selalu Berhemat Energi", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 135, cover: "📖" },
+        { id: 19, title: "T3 Kegiatanku", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 135, cover: "📖" },
+        { id: 20, title: "T1 Diriku", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 134, cover: "📖" },
+        { id: 21, title: "T4 Berbagai Pekerjaan", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 134, cover: "📖" },
+        { id: 22, title: "Tematik A", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 133, cover: "📖" },
+        { id: 23, title: "Btq Kelas 4", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 128, cover: "📖" },
+        { id: 24, title: "Btq Kelas 3", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 128, cover: "📖" },
+        { id: 25, title: "Buku Bahasa Inggris Kelas Iii", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 128, cover: "📖" },
+        { id: 26, title: "Buku Tematik B", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 128, cover: "📖" },
+        { id: 27, title: "Buku Bahasa Inggris Kelas Ii", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 128, cover: "📖" },
+        { id: 28, title: "Buku Tematik A", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 128, cover: "📖" },
+        { id: 29, title: "Tegak Bersambung Kelas 1", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 128, cover: "📖" },
+        { id: 30, title: "Tegak Bersambung Kelas 2", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 128, cover: "📖" },
+        { id: 31, title: "Tegak Bersambung Kelas 3", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 128, cover: "📖" },
+        { id: 32, title: "Btq Kelas 6", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 120, cover: "📖" },
+        { id: 33, title: "Buku Bahasa Inggris", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 116, cover: "📖" },
+        { id: 34, title: "Pendidikan Pancasila Kelas Iii", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 110, cover: "📖" },
+        { id: 35, title: "Phintar Pendidikan Pancasila Sd/Mi Kls.5/Km", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 108, cover: "📖" },
+        { id: 36, title: "Phintar Matematika Sd/Mi Kls. 5/Km", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 108, cover: "📖" },
+        { id: 37, title: "Phintar Ipas Sd/Mi Kls.5A/Km", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 108, cover: "📖" },
+        { id: 38, title: "Phintar Ipas Sd/Mi Kls.5B/Km", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 108, cover: "📖" },
+        { id: 39, title: "Phintar Bahasa Indonesia Sd/Mi Kls. 5/Km", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 108, cover: "📖" },
+        { id: 40, title: "Buku Smart", author: "Kemendikbud / Sekolah", category: "Pelajaran", stock: 107, cover: "📖" }
       ],
       members: [
         { id: "AG001", name: "Andi Pratama", kelas: "5A" },
@@ -1159,7 +1185,7 @@
       if (!data) return;
       $("homeStats").innerHTML = 
         stat("Total Judul Buku", data.books.length) +
-        stat("Total Eksemplar", data.books.reduce((s, b) => s + b.total, 0)) +
+        stat("Total Stok", data.books.reduce((s, b) => s + b.stock, 0)) +
         stat("Sedang Dipinjam", data.loans.filter(l => l.status !== "Dikembalikan").length) +
         stat("Total Anggota", data.members.length);
       $("featuredBooks").innerHTML = data.books.slice(0, 4).map(bookCard).join("");
@@ -1175,7 +1201,7 @@
           <p>${b.category}</p>
           <div class="book-foot">
             <span class="tag">${status}</span>
-            <span>${b.stock}/${b.total}</span>
+            <span>Stok: ${b.stock}</span>
           </div>
           <div class="actions">
             <button onclick="editBook(${b.id})">✎ Ubah</button>
@@ -1250,14 +1276,13 @@
 
     function renderReports() {
       if (!data) return;
-      const total = data.books.reduce((s, b) => s + b.total, 0);
-      const available = data.books.reduce((s, b) => s + b.stock, 0);
+      const totalStock = data.books.reduce((s, b) => s + b.stock, 0);
       
       $("reportStats").innerHTML = 
         stat("Judul Buku", data.books.length) +
-        stat("Eksemplar", total) +
-        stat("Tersedia", available) +
-        stat("Anggota", data.members.length);
+        stat("Total Stok", totalStock) +
+        stat("Anggota", data.members.length) +
+        stat("Transaksi", data.loans.length);
         
       const cats = {};
       data.books.forEach(b => cats[b.category] = (cats[b.category] || 0) + 1);
@@ -1340,7 +1365,7 @@
     }
 
     function openBookForm(id = null) {
-      const b = id ? bookById(id) : { title: "", author: "", category: "Pelajaran", total: 1, stock: 1, cover: "📚" };
+      const b = id ? bookById(id) : { title: "", author: "", category: "Pelajaran", stock: 1, cover: "📚" };
       
       openModal(
         id ? "Ubah Data Buku" : "Tambah Buku",
@@ -1350,26 +1375,24 @@
           <div class="field">
             <label>Kategori</label>
             <select id="fCategory">
-              ${["Pelajaran", "Agama", "Pancasila / Kewarganegaraan", "Bahasa & Sastra", "Matematika", "Sains / IPA", "Sosial / IPS", "Kesenian & Olahraga", "Koleksi Umum"].map(x => `<option ${x === b.category ? "selected" : ""}>${x}</option>`).join("")}
+              ${["Pelajaran", "Fiksi", "Referensi", "Dongeng"].map(x => `<option ${x === b.category ? "selected" : ""}>${x}</option>`).join("")}
             </select>
           </div>
-          <div class="field"><label>Total eksemplar</label><input id="fTotal" type="number" min="1" value="${b.total}"></div>
-          <div class="field"><label>Stok tersedia</label><input id="fStock" type="number" min="0" value="${b.stock}"></div>
+          <div class="field full"><label>Stok Buku</label><input id="fStock" type="number" min="0" value="${b.stock}"></div>
         </div>`,
         () => {
           const title = $("fTitle").value.trim();
           const author = $("fAuthor").value.trim();
-          const total = Number($("fTotal").value);
           const stock = Number($("fStock").value);
           
-          if (!title || !author || total < 1 || stock < 0 || stock > total) return toast("Data buku belum benar.");
+          if (!title || !author || stock < 0) return toast("Data buku belum benar.");
           
           if (id) {
-            Object.assign(b, { title, author, category: $("fCategory").value, total, stock });
+            Object.assign(b, { title, author, category: $("fCategory").value, stock });
           } else {
             data.books.push({
               id: Math.max(0, ...data.books.map(x => x.id)) + 1,
-              title, author, category: $("fCategory").value, total, stock, cover: "📚"
+              title, author, category: $("fCategory").value, stock, cover: "📚"
             });
           }
           
@@ -1490,7 +1513,7 @@
       const l = data.loans.find(x => x.id === id);
       if (!l) return;
       const b = bookById(l.bookId);
-      if (l.status !== "Dikembalikan" && b) b.stock = Math.min(b.total, b.stock + 1);
+      if (l.status !== "Dikembalikan" && b) b.stock++;
       l.status = "Dikembalikan";
       saveData();
       toast("Buku berhasil dikembalikan.");
@@ -1501,7 +1524,7 @@
         const l = data.loans.find(x => x.id === id);
         if (l && l.status !== "Dikembalikan") {
           const b = bookById(l.bookId);
-          if (b) b.stock = Math.min(b.total, b.stock + 1);
+          if (b) b.stock++;
         }
         data.loans = data.loans.filter(x => x.id !== id);
         saveData();
@@ -1649,7 +1672,7 @@
     });
 
     $("resetDataBtn").addEventListener("click", () => {
-      if (confirm("Kembalikan seluruh data ke awal? (Jika data lama masih tersimpan di Firebase, klik tombol Reset Data Awal untuk memperbaruinya)")) {
+      if (confirm("Kembalikan seluruh data ke awal?")) {
         data = clone(seed);
         saveData();
         toast("Data di-reset.");
