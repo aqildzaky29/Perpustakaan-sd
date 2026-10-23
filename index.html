@@ -1044,6 +1044,99 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
   <!-- JavaScript Logika Aplikasi & Firebase -->
+   // Data Buku Perpustakaan SDN Pisangan 01
+const initialBooksData = [
+  {
+    kodeBarang: "02.06.02.01.01",
+    title: "Buku Agama Islam (Pendidikan Agama Islam)",
+    author: "Departemen Agama / Kemendikbud",
+    publisher: "Dinas Pendidikan / Pemerintah",
+    year: "2013",
+    category: "Agama",
+    stock: 520,
+    cover: "https://via.placeholder.com/120x160?text=Agama+Islam"
+  },
+  {
+    kodeBarang: "02.06.02.01.02",
+    title: "Buku Pendidikan Pancasila dan Kewarganegaraan (PPKn)",
+    author: "Kemendikbud",
+    publisher: "Dinas Pendidikan / Pemerintah",
+    year: "2015",
+    category: "Pancasila / Kewarganegaraan",
+    stock: 450,
+    cover: "https://via.placeholder.com/120x160?text=PPKn"
+  },
+  {
+    kodeBarang: "02.06.02.01.03",
+    title: "Buku Bahasa Indonesia SD",
+    author: "Tim Penulis Kemendikbud",
+    publisher: "Balai Pustaka / Kemendikbud",
+    year: "2016",
+    category: "Bahasa & Sastra",
+    stock: 610,
+    cover: "https://via.placeholder.com/120x160?text=Bahasa+Indonesia"
+  },
+  {
+    kodeBarang: "02.06.02.01.04",
+    title: "Buku Matematika SD",
+    author: "Tim Penulis Matematika",
+    publisher: "Kementerian Pendidikan dan Kebudayaan",
+    year: "2017",
+    category: "Matematika",
+    stock: 580,
+    cover: "https://via.placeholder.com/120x160?text=Matematika"
+  },
+  {
+    kodeBarang: "02.06.02.01.05",
+    title: "Buku Ilmu Pengetahuan Alam (IPA)",
+    author: "Tim IPA SD",
+    publisher: "Kemendikbud",
+    year: "2018",
+    category: "Sains / IPA",
+    stock: 490,
+    cover: "https://via.placeholder.com/120x160?text=IPA+SD"
+  },
+  {
+    kodeBarang: "02.06.02.01.06",
+    title: "Buku Ilmu Pengetahuan Sosial (IPS)",
+    author: "Tim IPS SD",
+    publisher: "Kemendikbud",
+    year: "2018",
+    category: "Sosial / IPS",
+    stock: 470,
+    cover: "https://via.placeholder.com/120x160?text=IPS+SD"
+  },
+  {
+    kodeBarang: "02.06.02.01.07",
+    title: "Buku Seni Budaya dan Prakarya (SBdP)",
+    author: "Tim Seni Budaya",
+    publisher: "Kemendikbud",
+    year: "2019",
+    category: "Kesenian & Olahraga",
+    stock: 350,
+    cover: "https://via.placeholder.com/120x160?text=SBdP"
+  },
+  {
+    kodeBarang: "02.06.02.01.08",
+    title: "Buku PJOK (Pendidikan Jasmani, Olahraga & Kesehatan)",
+    author: "Tim PJOK",
+    publisher: "Kemendikbud",
+    year: "2019",
+    category: "Kesenian & Olahraga",
+    stock: 380,
+    cover: "https://via.placeholder.com/120x160?text=PJOK"
+  },
+  {
+    kodeBarang: "02.06.02.02.01",
+    title: "Buku Cerita Rakyat & Pengetahuan Umum",
+    author: "Berbagai Pengarang",
+    publisher: "Balai Pustaka",
+    year: "2020",
+    category: "Koleksi Umum",
+    stock: 230,
+    cover: "https://via.placeholder.com/120x160?text=Koleksi+Umum"
+  }
+];
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyB8U1JUGqXsqi4YZ_aSxKtjawKt3kkaICU",
