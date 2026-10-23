@@ -829,9 +829,14 @@
               <select id="categoryFilter">
                 <option value="">Semua kategori</option>
                 <option>Pelajaran</option>
-                <option>Fiksi</option>
-                <option>Referensi</option>
-                <option>Dongeng</option>
+                <option>Agama</option>
+                <option>Pancasila / Kewarganegaraan</option>
+                <option>Bahasa & Sastra</option>
+                <option>Matematika</option>
+                <option>Sains / IPA</option>
+                <option>Sosial / IPS</option>
+                <option>Kesenian & Olahraga</option>
+                <option>Koleksi Umum</option>
               </select>
               <select id="availabilityFilter">
                 <option value="">Semua status</option>
@@ -1044,99 +1049,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
   <!-- JavaScript Logika Aplikasi & Firebase -->
-   // Data Buku Perpustakaan SDN Pisangan 01
-const initialBooksData = [
-  {
-    kodeBarang: "02.06.02.01.01",
-    title: "Buku Agama Islam (Pendidikan Agama Islam)",
-    author: "Departemen Agama / Kemendikbud",
-    publisher: "Dinas Pendidikan / Pemerintah",
-    year: "2013",
-    category: "Agama",
-    stock: 520,
-    cover: "https://via.placeholder.com/120x160?text=Agama+Islam"
-  },
-  {
-    kodeBarang: "02.06.02.01.02",
-    title: "Buku Pendidikan Pancasila dan Kewarganegaraan (PPKn)",
-    author: "Kemendikbud",
-    publisher: "Dinas Pendidikan / Pemerintah",
-    year: "2015",
-    category: "Pancasila / Kewarganegaraan",
-    stock: 450,
-    cover: "https://via.placeholder.com/120x160?text=PPKn"
-  },
-  {
-    kodeBarang: "02.06.02.01.03",
-    title: "Buku Bahasa Indonesia SD",
-    author: "Tim Penulis Kemendikbud",
-    publisher: "Balai Pustaka / Kemendikbud",
-    year: "2016",
-    category: "Bahasa & Sastra",
-    stock: 610,
-    cover: "https://via.placeholder.com/120x160?text=Bahasa+Indonesia"
-  },
-  {
-    kodeBarang: "02.06.02.01.04",
-    title: "Buku Matematika SD",
-    author: "Tim Penulis Matematika",
-    publisher: "Kementerian Pendidikan dan Kebudayaan",
-    year: "2017",
-    category: "Matematika",
-    stock: 580,
-    cover: "https://via.placeholder.com/120x160?text=Matematika"
-  },
-  {
-    kodeBarang: "02.06.02.01.05",
-    title: "Buku Ilmu Pengetahuan Alam (IPA)",
-    author: "Tim IPA SD",
-    publisher: "Kemendikbud",
-    year: "2018",
-    category: "Sains / IPA",
-    stock: 490,
-    cover: "https://via.placeholder.com/120x160?text=IPA+SD"
-  },
-  {
-    kodeBarang: "02.06.02.01.06",
-    title: "Buku Ilmu Pengetahuan Sosial (IPS)",
-    author: "Tim IPS SD",
-    publisher: "Kemendikbud",
-    year: "2018",
-    category: "Sosial / IPS",
-    stock: 470,
-    cover: "https://via.placeholder.com/120x160?text=IPS+SD"
-  },
-  {
-    kodeBarang: "02.06.02.01.07",
-    title: "Buku Seni Budaya dan Prakarya (SBdP)",
-    author: "Tim Seni Budaya",
-    publisher: "Kemendikbud",
-    year: "2019",
-    category: "Kesenian & Olahraga",
-    stock: 350,
-    cover: "https://via.placeholder.com/120x160?text=SBdP"
-  },
-  {
-    kodeBarang: "02.06.02.01.08",
-    title: "Buku PJOK (Pendidikan Jasmani, Olahraga & Kesehatan)",
-    author: "Tim PJOK",
-    publisher: "Kemendikbud",
-    year: "2019",
-    category: "Kesenian & Olahraga",
-    stock: 380,
-    cover: "https://via.placeholder.com/120x160?text=PJOK"
-  },
-  {
-    kodeBarang: "02.06.02.02.01",
-    title: "Buku Cerita Rakyat & Pengetahuan Umum",
-    author: "Berbagai Pengarang",
-    publisher: "Balai Pustaka",
-    year: "2020",
-    category: "Koleksi Umum",
-    stock: 230,
-    cover: "https://via.placeholder.com/120x160?text=Koleksi+Umum"
-  }
-];
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyB8U1JUGqXsqi4YZ_aSxKtjawKt3kkaICU",
@@ -1155,12 +1067,15 @@ const initialBooksData = [
 
     const seed = {
       books: [
-        { id: 1, title: "Laskar Pelangi", author: "Andrea Hirata", category: "Fiksi", stock: 4, total: 5, cover: "📕" },
-        { id: 2, title: "Matematika Kelas 5", author: "Tim Edukasi", category: "Pelajaran", stock: 6, total: 6, cover: "📘" },
-        { id: 3, title: "IPA untuk SD/MI Kelas 6", author: "Tim Edukasi", category: "Pelajaran", stock: 5, total: 5, cover: "📗" },
-        { id: 4, title: "Ensiklopedia Anak", author: "Penerbit Ilmu", category: "Referensi", stock: 3, total: 3, cover: "📙" },
-        { id: 5, title: "Kumpulan Dongeng Nusantara", author: "Tim Nusantara", category: "Dongeng", stock: 4, total: 4, cover: "📒" },
-        { id: 6, title: "Petualangan di Hutan", author: "Rani Putri", category: "Fiksi", stock: 2, total: 3, cover: "📔" }
+        { id: 1, title: "Buku Agama Islam (Pendidikan Agama Islam)", author: "Departemen Agama / Kemendikbud", category: "Agama", stock: 520, total: 520, cover: "📖" },
+        { id: 2, title: "Buku Pendidikan Pancasila dan Kewarganegaraan (PPKn)", author: "Kemendikbud", category: "Pancasila / Kewarganegaraan", stock: 450, total: 450, cover: "📘" },
+        { id: 3, title: "Buku Bahasa Indonesia SD", author: "Tim Penulis Kemendikbud", category: "Bahasa & Sastra", stock: 610, total: 610, cover: "📗" },
+        { id: 4, title: "Buku Matematika SD", author: "Tim Penulis Matematika", category: "Matematika", stock: 580, total: 580, cover: "📙" },
+        { id: 5, title: "Buku Ilmu Pengetahuan Alam (IPA)", author: "Tim IPA SD", category: "Sains / IPA", stock: 490, total: 490, cover: "🔬" },
+        { id: 6, title: "Buku Ilmu Pengetahuan Sosial (IPS)", author: "Tim IPS SD", category: "Sosial / IPS", stock: 470, total: 470, cover: "🌍" },
+        { id: 7, title: "Buku Seni Budaya dan Prakarya (SBdP)", author: "Tim Seni Budaya", category: "Kesenian & Olahraga", stock: 350, total: 350, cover: "🎨" },
+        { id: 8, title: "Buku PJOK (Pendidikan Jasmani, Olahraga & Kesehatan)", author: "Tim PJOK", category: "Kesenian & Olahraga", stock: 380, total: 380, cover: "⚽" },
+        { id: 9, title: "Buku Cerita Rakyat & Pengetahuan Umum", author: "Berbagai Pengarang", category: "Koleksi Umum", stock: 230, total: 230, cover: "📚" }
       ],
       members: [
         { id: "AG001", name: "Andi Pratama", kelas: "5A" },
@@ -1175,7 +1090,7 @@ const initialBooksData = [
         { id: 103, student: "Budi Santoso", bookId: 5, borrow: "2026-10-16", due: "2026-10-23", status: "Dikembalikan" }
       ],
       admins: [{ id: 1, name: "Petugas Perpustakaan", username: "petugas", password: "perpus123", role: "Admin", status: "Aktif" }],
-      settings: { library: "Perpustakaan", school: "SDN Pisangan 01", location: "Jakarta Timur" }
+      settings: { library: "Perpustakaan", school: "SDN Pisangan Timur 01 PG", location: "Jakarta Timur" }
     };
 
     let data = null, currentAdmin = null;
@@ -1435,7 +1350,7 @@ const initialBooksData = [
           <div class="field">
             <label>Kategori</label>
             <select id="fCategory">
-              ${["Pelajaran", "Fiksi", "Referensi", "Dongeng"].map(x => `<option ${x === b.category ? "selected" : ""}>${x}</option>`).join("")}
+              ${["Pelajaran", "Agama", "Pancasila / Kewarganegaraan", "Bahasa & Sastra", "Matematika", "Sains / IPA", "Sosial / IPS", "Kesenian & Olahraga", "Koleksi Umum"].map(x => `<option ${x === b.category ? "selected" : ""}>${x}</option>`).join("")}
             </select>
           </div>
           <div class="field"><label>Total eksemplar</label><input id="fTotal" type="number" min="1" value="${b.total}"></div>
@@ -1734,7 +1649,7 @@ const initialBooksData = [
     });
 
     $("resetDataBtn").addEventListener("click", () => {
-      if (confirm("Kembalikan seluruh data ke awal?")) {
+      if (confirm("Kembalikan seluruh data ke awal? (Jika data lama masih tersimpan di Firebase, klik tombol Reset Data Awal untuk memperbaruinya)")) {
         data = clone(seed);
         saveData();
         toast("Data di-reset.");
