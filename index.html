@@ -1358,7 +1358,21 @@
       return JSON.parse(JSON.stringify(x));
     }
 
+    function checkPersistentLogin() {
+      const savedAdmin = localStorage.getItem("perpus_logged_in");
+      if (savedAdmin) {
+        try {
+          currentAdmin = JSON.parse(savedAdmin);
+          $("loginScreen").style.display = "none";
+          $("app").classList.add("show");
+        } catch(e) {
+          localStorage.removeItem("perpus_logged_in");
+        }
+      }
+    }
+
     function loadData() {
+      checkPersistentLogin();
       db.ref("perpus_data").on("value", snapshot => {
         const val = snapshot.val();
         if (!val || !Array.isArray(val.books) || !Array.isArray(val.admins)) {
@@ -1803,7 +1817,10 @@
             a.role = $("fAdminRole").value;
             a.status = $("fAdminStatus").value;
             if (pass) a.password = pass;
-            if (currentAdmin && currentAdmin.id === id) currentAdmin = a;
+            if (currentAdmin && currentAdmin.id === id) {
+              currentAdmin = a;
+              localStorage.setItem("perpus_logged_in", JSON.stringify(a));
+            }
           } else {
             data.admins.push({
               id: Math.max(0, ...data.admins.map(x => x.id)) + 1,
@@ -1843,6 +1860,7 @@
       }
       
       currentAdmin = a;
+      localStorage.setItem("perpus_logged_in", JSON.stringify(a));
       $("loginError").classList.remove("show");
       $("loginScreen").style.display = "none";
       $("app").classList.add("show");
@@ -1852,6 +1870,7 @@
 
     function logout() {
       currentAdmin = null;
+      localStorage.removeItem("perpus_logged_in");
       $("app").classList.remove("show");
       $("loginScreen").style.display = "flex";
       $("loginUsername").value = "";
@@ -1899,6 +1918,7 @@
         currentAdmin.name = $("setAdminName").value;
         currentAdmin.username = $("setAdminUsername").value;
         if ($("setAdminPassword").value) currentAdmin.password = $("setAdminPassword").value;
+        localStorage.setItem("perpus_logged_in", JSON.stringify(currentAdmin));
         saveData();
         toast("Akun disimpan.");
       }
