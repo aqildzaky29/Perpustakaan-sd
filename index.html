@@ -300,11 +300,18 @@
     }
 
     .cover {
-      height: 120px;
+      height: 140px;
       background: #e8f0ed;
       display: grid;
       place-items: center;
       font-size: 43px;
+      overflow: hidden;
+    }
+
+    .cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .book-body {
@@ -1440,8 +1447,11 @@
 
     function bookCard(b) {
       const status = b.stock > 0 ? "Tersedia" : "Habis";
+      const isImg = b.cover && (b.cover.startsWith("http://") || b.cover.startsWith("https://") || b.cover.startsWith("data:image/"));
+      const coverContent = isImg ? `<img src="${b.cover}" alt="${b.title}">` : (b.cover || "📚");
+
       return `<div class="book">
-        <div class="cover">${b.cover || "📚"}</div>
+        <div class="cover">${coverContent}</div>
         <div class="book-body">
           <h4>${b.title}</h4>
           <p>${b.author}</p>
@@ -1612,7 +1622,8 @@
     }
 
     function openBookForm(id = null) {
-      const b = id ? bookById(id) : { title: "", author: "", category: "Pelajaran", stock: 1, cover: "📚" };
+      const b = id ? bookById(id) : { title: "", author: "", category: "Pelajaran", stock: 1, cover: "📖" };
+      const currentCoverVal = (b.cover && !b.cover.startsWith("http") && !b.cover.startsWith("data:")) ? "📖" : (b.cover || "📖");
       
       openModal(
         id ? "Ubah Data Buku" : "Tambah Buku",
@@ -1625,27 +1636,49 @@
               ${["Pelajaran", "Agama", "Pancasila / Kewarganegaraan", "Bahasa & Sastra", "Matematika", "Sains / IPA", "Sosial / IPS", "Kesenian & Olahraga", "Koleksi Umum"].map(x => `<option ${x === b.category ? "selected" : ""}>${x}</option>`).join("")}
             </select>
           </div>
-          <div class="field full"><label>Stok Buku</label><input id="fStock" type="number" min="0" value="${b.stock}"></div>
+          <div class="field"><label>Stok Buku</label><input id="fStock" type="number" min="0" value="${b.stock}"></div>
+          <div class="field full">
+            <label>Foto Sampul Buku (Pilih salah satu)</label>
+            <div style="display:flex;gap:10px;margin-bottom:8px">
+              <input type="file" id="fImageFile" accept="image/*" style="padding:6px;font-size:11px">
+            </div>
+            <input id="fCoverUrl" placeholder="Atau masukkan URL Link Gambar (opsional)" value="${(b.cover && (b.cover.startsWith('http') || b.cover.startsWith('data:'))) ? b.cover : ''}">
+          </div>
         </div>`,
         () => {
           const title = $("fTitle").value.trim();
           const author = $("fAuthor").value.trim();
           const stock = Number($("fStock").value);
+          const coverUrl = $("fCoverUrl").value.trim();
+          const fileInput = $("fImageFile");
           
           if (!title || !author || stock < 0) return toast("Data buku belum benar.");
-          
-          if (id) {
-            Object.assign(b, { title, author, category: $("fCategory").value, stock });
+
+          const finishSave = (finalCover) => {
+            if (id) {
+              Object.assign(b, { title, author, category: $("fCategory").value, stock, cover: finalCover });
+            } else {
+              data.books.push({
+                id: Math.max(0, ...data.books.map(x => x.id)) + 1,
+                title, author, category: $("fCategory").value, stock, cover: finalCover
+              });
+            }
+            saveData();
+            closeModal();
+            toast(id ? "Data buku berhasil diubah." : "Buku berhasil ditambahkan.");
+          };
+
+          if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              finishSave(e.target.result);
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+          } else if (coverUrl) {
+            finishSave(coverUrl);
           } else {
-            data.books.push({
-              id: Math.max(0, ...data.books.map(x => x.id)) + 1,
-              title, author, category: $("fCategory").value, stock, cover: "📚"
-            });
+            finishSave(b.cover || "📖");
           }
-          
-          saveData();
-          closeModal();
-          toast(id ? "Data buku berhasil diubah." : "Buku berhasil ditambahkan.");
         }
       );
     }
