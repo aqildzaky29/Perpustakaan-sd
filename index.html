@@ -781,7 +781,7 @@
       </nav>
       <div class="nav-label">PENGELOLAAN</div>
       <nav class="nav">
-        <button data-page="members">♙ &nbsp; Data Anggota</button>
+        <button data-page="members">♙ &nbsp; Data Peminjam</button>
         <button data-page="admins">⚙ &nbsp; Admin & Pengguna</button>
         <button data-page="settings">☷ &nbsp; Pengaturan</button>
       </nav>
@@ -957,18 +957,18 @@
           </div>
         </section>
 
-        <!-- Halaman Data Anggota -->
+        <!-- Halaman Data Peminjam -->
         <section class="page" id="page-members">
           <div class="heading">
             <div>
-              <h1>Data Anggota 👥</h1>
-              <p>Tambah, ubah, dan hapus anggota perpustakaan.</p>
+              <h1>Data Peminjam 👥</h1>
+              <p>Tambah, ubah, dan hapus data peminjam / siswa perpustakaan.</p>
             </div>
-            <button class="btn" id="addMemberBtn">＋ Tambah Anggota</button>
+            <button class="btn" id="addMemberBtn">＋ Tambah Peminjam</button>
           </div>
           <div class="panel">
             <div class="filters">
-              <input id="memberSearch" placeholder="Cari nama anggota...">
+              <input id="memberSearch" placeholder="Cari nama peminjam...">
             </div>
             <div class="table-wrap">
               <table>
@@ -983,6 +983,7 @@
                 <tbody id="memberRows"></tbody>
               </table>
             </div>
+            <div id="memberEmpty" class="empty" style="display:none">Belum ada data peminjam. Silakan tambahkan peminjam baru.</div>
           </div>
         </section>
 
@@ -1065,7 +1066,7 @@
           </div>
           <div class="panel">
             <h3>Data Sistem</h3>
-            <p style="font-size:12px;color:#7d888d">Reset akan mengembalikan buku, anggota, transaksi, dan akun ke data awal.</p>
+            <p style="font-size:12px;color:#7d888d">Reset akan mengembalikan buku, peminjam, transaksi, dan akun ke data awal.</p>
             <button class="btn danger-btn" id="resetDataBtn">Reset Data Awal</button>
           </div>
         </section>
@@ -1389,18 +1390,8 @@
         { id: 279, title: "Buku Panduan Guru Seni Musik Untuk Sd/Mi Kelas V", author: "Kemendikbud / Sekolah", category: "Kesenian & Olahraga", stock: 1, cover: "📖" },
         { id: 280, title: "Buku Panduan Guru Seni Musik Untuk Sd/Mi Kelas Iv", author: "Kemendikbud / Sekolah", category: "Kesenian & Olahraga", stock: 1, cover: "📖" }
       ],
-      members: [
-        { id: "AG001", name: "Andi Pratama", kelas: "5A" },
-        { id: "AG002", name: "Siti Aisyah", kelas: "5B" },
-        { id: "AG003", name: "Budi Santoso", kelas: "4A" },
-        { id: "AG004", name: "Citra Lestari", kelas: "6A" },
-        { id: "AG005", name: "Dimas Saputra", kelas: "6B" }
-      ],
-      loans: [
-        { id: 101, student: "Andi Pratama", bookId: 1, borrow: "2026-10-15", due: "2026-10-22", status: "Dipinjam" },
-        { id: 102, student: "Siti Aisyah", bookId: 3, borrow: "2026-10-10", due: "2026-10-17", status: "Terlambat" },
-        { id: 103, student: "Budi Santoso", bookId: 5, borrow: "2026-10-16", due: "2026-10-23", status: "Dikembalikan" }
-      ],
+      members: [], // Dikosongkan tanpa data default
+      loans: [],   // Transaksi default juga dikosongkan agar bersih
       admins: [{ id: 1, name: "Petugas Perpustakaan", username: "petugas", password: "perpus123", role: "Admin", status: "Aktif" }],
       settings: { library: "Perpustakaan", school: "SDN Pisangan Timur 01 PG", location: "Jakarta Timur" }
     };
@@ -1444,6 +1435,8 @@
         } else {
           data = val;
           if (!data.settings) data.settings = clone(seed.settings);
+          if (!data.members) data.members = [];
+          if (!data.loans) data.loans = [];
           if (!data.admins.some(a => a.username === "petugas")) data.admins.push(clone(seed.admins[0]));
         }
         const appEl = $("app");
@@ -1477,7 +1470,7 @@
         catalog: "Katalog Buku",
         loans: "Peminjaman & Pengembalian",
         reports: "Laporan",
-        members: "Data Anggota",
+        members: "Data Peminjam",
         admins: "Admin & Pengguna",
         settings: "Pengaturan"
       };
@@ -1497,7 +1490,7 @@
         stat("Total Judul Buku", data.books.length) +
         stat("Total Stok", data.books.reduce((s, b) => s + b.stock, 0)) +
         stat("Sedang Dipinjam", data.loans.filter(l => l.status !== "Dikembalikan").length) +
-        stat("Total Anggota", data.members.length);
+        stat("Total Peminjam", data.members.length);
       $("featuredBooks").innerHTML = data.books.slice(0, 4).map(bookCard).join("");
     }
 
@@ -1574,9 +1567,9 @@
     function renderMembers() {
       if (!data) return;
       const q = $("memberSearch").value.toLowerCase();
-      $("memberRows").innerHTML = data.members
-        .filter(m => m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q))
-        .map(m => `<tr>
+      const filtered = data.members.filter(m => m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q));
+      
+      $("memberRows").innerHTML = filtered.map(m => `<tr>
           <td>${m.id}</td>
           <td>${m.name}</td>
           <td>${m.kelas}</td>
@@ -1585,6 +1578,8 @@
             <button class="table-btn" onclick="deleteMember('${m.id}')">Hapus</button>
           </td>
         </tr>`).join("");
+      
+      $("memberEmpty").style.display = filtered.length ? "none" : "block";
     }
 
     function renderReports() {
@@ -1594,7 +1589,7 @@
       $("reportStats").innerHTML = 
         stat("Judul Buku", data.books.length) +
         stat("Total Stok", totalStock) +
-        stat("Anggota", data.members.length) +
+        stat("Peminjam", data.members.length) +
         stat("Transaksi", data.loans.length);
         
       const cats = {};
@@ -1754,9 +1749,9 @@
       const m = id ? data.members.find(x => x.id === id) : { name: "", kelas: "1A" };
       
       openModal(
-        id ? "Ubah Anggota" : "Tambah Anggota",
+        id ? "Ubah Peminjam" : "Tambah Peminjam",
         `<div class="field-grid">
-          <div class="field full"><label>Nama anggota</label><input id="fMemberName" value="${m.name}"></div>
+          <div class="field full"><label>Nama peminjam</label><input id="fMemberName" value="${m.name}"></div>
           <div class="field">
             <label>Kelas</label>
             <select id="fClass">
@@ -1772,12 +1767,13 @@
             m.name = name;
             m.kelas = $("fClass").value;
           } else {
-            data.members.push({ id: "AG" + String(data.members.length + 1).padStart(3, "0"), name, kelas: $("fClass").value });
+            const nextNum = data.members.length > 0 ? Math.max(...data.members.map(x => Number(x.id.replace("AG", "")) || 0)) + 1 : 1;
+            data.members.push({ id: "AG" + String(nextNum).padStart(3, "0"), name, kelas: $("fClass").value });
           }
           
           saveData();
           closeModal();
-          toast(id ? "Anggota diubah." : "Anggota ditambahkan.");
+          toast(id ? "Peminjam diubah." : "Peminjam ditambahkan.");
         }
       );
     }
@@ -1787,11 +1783,11 @@
     }
 
     function deleteMember(id) {
-      if (data.loans.some(l => l.student === data.members.find(m => m.id === id)?.name && l.status !== "Dikembalikan")) return toast("Anggota masih memiliki peminjaman.");
-      if (confirm("Hapus anggota ini?")) {
+      if (data.loans.some(l => l.student === data.members.find(m => m.id === id)?.name && l.status !== "Dikembalikan")) return toast("Peminjam masih memiliki peminjaman aktif.");
+      if (confirm("Hapus peminjam ini?")) {
         data.members = data.members.filter(m => m.id !== id);
         saveData();
-        toast("Anggota dihapus.");
+        toast("Peminjam dihapus.");
       }
     }
 
@@ -1799,12 +1795,12 @@
       const l = id ? data.loans.find(x => x.id === id) : { student: "", bookId: data.books[0]?.id || "", borrow: "2026-10-21", due: "2026-10-28", status: "Dipinjam" };
       
       const selectedBook = bookById(l.bookId);
-      const initialBookText = selectedBook ? `${selectedBook.title} (Stok: ${selectedBook.stock})` : "";
+      const initialBookText = selectedBook ? selectedBook.title : "";
 
       openModal(
         id ? "Ubah Transaksi" : "Peminjaman Baru",
         `<div class="field-grid">
-          <div class="field full"><label>Nama siswa</label><input id="fStudent" value="${l.student}"></div>
+          <div class="field full"><label>Nama siswa / peminjam</label><input id="fStudent" value="${l.student}"></div>
           
           <div class="field full" style="position:relative;">
             <label>Cari & Pilih Buku (Ketik judul lalu pilih dari daftar atau tekan Enter)</label>
@@ -1865,7 +1861,7 @@
           } else {
             dropdown.innerHTML = filtered.map(b => `
               <div class="book-suggestion-item" data-id="${b.id}" style="padding:8px 12px; font-size:12px; border-bottom:1px solid #f0f3f2; cursor:pointer;">
-                <b>${b.title}</b> <span style="color:#666;">(Stok: ${b.stock})</span><br><small style="color:#889;">${b.author} - ${b.category}</small>
+                <b>${b.title}</b><br><small style="color:#889;">${b.author} - ${b.category} (Stok: ${b.stock})</small>
               </div>
             `).join("");
 
@@ -1875,7 +1871,7 @@
                 const chosenId = item.dataset.id;
                 const chosenBook = bookById(chosenId);
                 if (chosenBook) {
-                  searchInput.value = `${chosenBook.title} (Stok: ${chosenBook.stock})`;
+                  searchInput.value = chosenBook.title;
                   hiddenId.value = chosenBook.id;
                   dropdown.style.display = "none";
                 }
@@ -1904,7 +1900,7 @@
             const q = searchInput.value.toLowerCase();
             const found = data.books.find(b => b.title.toLowerCase().includes(q));
             if (found) {
-              searchInput.value = `${found.title} (Stok: ${found.stock})`;
+              searchInput.value = found.title;
               hiddenId.value = found.id;
               dropdown.style.display = "none";
             } else {
