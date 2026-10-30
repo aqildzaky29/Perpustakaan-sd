@@ -936,9 +936,16 @@
           <div class="heading">
             <div>
               <h1>Laporan Perpustakaan 📊</h1>
-              <p>Ringkasan koleksi dan aktivitas perpustakaan.</p>
+              <p>Ringkasan koleksi dan aktivitas harian perpustakaan berdasarkan jam dunia.</p>
             </div>
             <button class="btn" id="exportBtn">⇩ Unduh CSV</button>
+          </div>
+          <div class="panel" style="margin-bottom:15px">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <label style="font-size:12px;font-weight:bold;">📅 Pilih Tanggal Laporan:</label>
+              <input type="date" id="reportDateFilter" style="padding:8px;border:1px solid #cbd8d4;border-radius:7px;background:#fff;max-width:200px;">
+              <button class="btn light small" id="resetReportDateBtn">Tampilkan Semua Tanggal</button>
+            </div>
           </div>
           <div class="stats" id="reportStats"></div>
           <div class="two-col">
@@ -951,19 +958,19 @@
             </div>
             <div class="panel">
               <div class="section-head">
-                <h3>Status transaksi</h3>
+                <h3>Status transaksi (Tanggal Terpilih)</h3>
               </div>
               <div id="statusBars"></div>
             </div>
           </div>
         </section>
 
-        <!-- Halaman Data Peminjam (Sinkron dari Peminjaman) -->
+        <!-- Halaman Data Peminjam (Sinkron dari Peminjaman Aktif) -->
         <section class="page" id="page-members">
           <div class="heading">
             <div>
               <h1>Data Peminjam 👥</h1>
-              <p>Daftar siswa yang meminjam buku (disinkronkan otomatis dari peminjaman baru).</p>
+              <p>Daftar siswa yang sedang aktif meminjam buku (otomatis terhapus jika sudah dikembalikan).</p>
             </div>
           </div>
           <div class="panel">
@@ -985,7 +992,7 @@
                 <tbody id="memberRows"></tbody>
               </table>
             </div>
-            <div id="memberEmpty" class="empty" style="display:none">Belum ada data peminjam. Silakan buat peminjaman baru.</div>
+            <div id="memberEmpty" class="empty" style="display:none">Tidak ada peminjam aktif saat ini. Semua buku sudah dikembalikan.</div>
           </div>
         </section>
 
@@ -1108,6 +1115,15 @@
     const auth = firebase.auth();
 
     const $ = id => document.getElementById(id);
+
+    // Fungsi mendapatkan tanggal hari ini berdasarkan zona waktu lokal / jam dunia perangkat (YYYY-MM-DD)
+    function getWorldToday() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
 
     const seed = {
       books: [
@@ -1490,7 +1506,7 @@
         stat("Total Judul Buku", data.books.length) +
         stat("Total Stok", data.books.reduce((s, b) => s + b.stock, 0)) +
         stat("Sedang Dipinjam", data.loans.filter(l => l.status !== "Dikembalikan").length) +
-        stat("Total Peminjam", data.loans.length);
+        stat("Total Peminjam Aktif", data.loans.filter(l => l.status !== "Dikembalikan").length);
       $("featuredBooks").innerHTML = data.books.slice(0, 4).map(bookCard).join("");
     }
 
@@ -1568,7 +1584,9 @@
     function renderMembers() {
       if (!data) return;
       const q = $("memberSearch").value.toLowerCase();
-      const filtered = data.loans.filter(l => 
+      // Hanya menampilkan peminjam yang statusnya BELUM dikembalikan
+      const activeLoans = data.loans.filter(l => l.status !== "Dikembalikan");
+      const filtered = activeLoans.filter(l => 
         l.student.toLowerCase().includes(q) || 
         (l.kelas || "").toLowerCase().includes(q) || 
         (bookById(l.bookId)?.title || "").toLowerCase().includes(q)
@@ -1591,13 +1609,17 @@
 
     function renderReports() {
       if (!data) return;
+      const selectedDate = $("reportDateFilter").value; // Format: YYYY-MM-DD
+      
+      // Filter transaksi berdasarkan tanggal pinjam (atau tampilkan semua jika filter kosong)
+      const filteredLoans = selectedDate ? data.loans.filter(l => l.borrow === selectedDate) : data.loans;
       const totalStock = data.books.reduce((s, b) => s + b.stock, 0);
       
       $("reportStats").innerHTML = 
         stat("Judul Buku", data.books.length) +
         stat("Total Stok", totalStock) +
-        stat("Peminjam", data.loans.length) +
-        stat("Transaksi", data.loans.length);
+        stat("Peminjam (Periode Ini)", filteredLoans.length) +
+        stat("Total Transaksi", data.loans.length);
         
       const cats = {};
       data.books.forEach(b => cats[b.category] = (cats[b.category] || 0) + 1);
@@ -1611,15 +1633,15 @@
       `).join("");
       
       const sts = {
-        Dipinjam: data.loans.filter(l => l.status === "Dipinjam").length,
-        Terlambat: data.loans.filter(l => l.status === "Terlambat").length,
-        Dikembalikan: data.loans.filter(l => l.status === "Dikembalikan").length
+        Dipinjam: filteredLoans.filter(l => l.status === "Dipinjam").length,
+        Terlambat: filteredLoans.filter(l => l.status === "Terlambat").length,
+        Dikembalikan: filteredLoans.filter(l => l.status === "Dikembalikan").length
       };
       
       $("statusBars").innerHTML = Object.entries(sts).map(([k, v]) => `
         <div class="bar-row">
           <div class="bar-label"><span>${k}</span><b>${v}</b></div>
-          <div class="bar"><i style="width:${Math.min(100, (v / Math.max(1, data.loans.length)) * 100)}%"></i></div>
+          <div class="bar"><i style="width:${Math.min(100, (v / Math.max(1, filteredLoans.length)) * 100)}%"></i></div>
         </div>
       `).join("");
     }
@@ -1753,7 +1775,8 @@
     }
 
     function openLoanForm(id = null) {
-      const l = id ? data.loans.find(x => x.id === id) : { student: "", kelas: "5A", bookId: data.books[0]?.id || "", borrow: "2026-10-21", due: "2026-10-28", status: "Dipinjam" };
+      const worldToday = getWorldToday();
+      const l = id ? data.loans.find(x => x.id === id) : { student: "", kelas: "5A", bookId: data.books[0]?.id || "", borrow: worldToday, due: worldToday, status: "Dipinjam" };
       
       const selectedBook = bookById(l.bookId);
       const initialBookText = selectedBook ? selectedBook.title : "";
@@ -1778,7 +1801,7 @@
             <div id="bookSearchDropdown" style="display:none; position:absolute; left:0; right:0; top:calc(100% + 2px); max-height:180px; overflow-y:auto; background:#fff; border:1px solid #cbd8d4; border-radius:7px; z-index:50; box-shadow:0 4px 12px rgba(0,0,0,0.15);"></div>
           </div>
 
-          <div class="field"><label>Tanggal pinjam</label><input id="fBorrow" type="date" value="${l.borrow}"></div>
+          <div class="field"><label>Tanggal pinjam (Sinkron jam dunia)</label><input id="fBorrow" type="date" value="${l.borrow}"></div>
           <div class="field"><label>Batas kembali</label><input id="fDue" type="date" value="${l.due}"></div>
           <div class="field">
             <label>Status</label>
@@ -1793,18 +1816,32 @@
           const student = $("fStudent").value.trim();
           const kelas = $("fClass").value;
           const bookId = Number($("fBookId").value);
+          const newStatus = $("fStatus").value;
+          
           if (!student) return toast("Nama siswa wajib diisi.");
           if (!bookId || !bookById(bookId)) return toast("Silakan pilih buku yang valid dari daftar pencarian.");
           
           if (id) {
-            Object.assign(l, { student, kelas, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: $("fStatus").value });
+            // Jika sebelumnya belum dikembalikan dan sekarang diubah menjadi dikembalikan, kembalikan stok buku
+            if (l.status !== "Dikembalikan" && newStatus === "Dikembalikan") {
+              const b = bookById(l.bookId);
+              if (b) b.stock++;
+            }
+            // Jika sebelumnya sudah dikembalikan dan diubah jadi dipinjam lagi, kurangi stok
+            else if (l.status === "Dikembalikan" && newStatus !== "Dikembalikan") {
+              const b = bookById(l.bookId);
+              if (b && b.stock > 0) b.stock--;
+            }
+            Object.assign(l, { student, kelas, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: newStatus });
           } else {
             const b = bookById(bookId);
             if (!b || b.stock < 1) return toast("Stok buku habis.");
-            b.stock--;
+            if (newStatus !== "Dikembalikan") {
+              b.stock--;
+            }
             data.loans.push({
               id: Math.max(100, ...data.loans.map(x => x.id), 0) + 1,
-              student, kelas, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: $("fStatus").value
+              student, kelas, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: newStatus
             });
           }
           
@@ -1891,7 +1928,7 @@
       if (l.status !== "Dikembalikan" && b) b.stock++;
       l.status = "Dikembalikan";
       saveData();
-      toast("Buku berhasil dikembalikan.");
+      toast("Buku berhasil dikembalikan dan data peminjam diperbarui.");
     }
 
     function deleteLoan(id) {
@@ -2056,6 +2093,12 @@
     $("loanStatusFilter").addEventListener("change", renderLoans);
 
     $("memberSearch").addEventListener("input", renderMembers);
+
+    $("reportDateFilter").addEventListener("change", renderReports);
+    $("resetReportDateBtn").addEventListener("click", () => {
+      $("reportDateFilter").value = "";
+      renderReports();
+    });
 
     $("saveLibrarySettings").addEventListener("click", () => {
       data.settings.library = $("setLibraryName").value;
