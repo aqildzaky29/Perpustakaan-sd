@@ -1797,13 +1797,23 @@
 
     function openLoanForm(id = null) {
       const l = id ? data.loans.find(x => x.id === id) : { student: "", bookId: data.books[0]?.id || "", borrow: "2026-10-21", due: "2026-10-28", status: "Dipinjam" };
-      const options = data.books.map(b => `<option value="${b.id}" ${Number(b.id) === Number(l.bookId) ? "selected" : ""}>${b.title}</option>`).join("");
       
+      const selectedBook = bookById(l.bookId);
+      const initialBookText = selectedBook ? `${selectedBook.title} (Stok: ${selectedBook.stock})` : "";
+
       openModal(
         id ? "Ubah Transaksi" : "Peminjaman Baru",
         `<div class="field-grid">
           <div class="field full"><label>Nama siswa</label><input id="fStudent" value="${l.student}"></div>
-          <div class="field full"><label>Buku</label><select id="fBook">${options}</select></div>
+          
+          <div class="field full" style="position:relative;">
+            <label>Cari & Pilih Buku (Ketik judul lalu pilih dari daftar atau tekan Enter)</label>
+            <input id="fBookSearch" placeholder="Ketik judul buku untuk mencari..." value="${initialBookText}">
+            <input type="hidden" id="fBookId" value="${l.bookId}">
+            
+            <div id="bookSearchDropdown" style="display:none; position:absolute; left:0; right:0; top:calc(100% + 2px); max-height:180px; overflow-y:auto; background:#fff; border:1px solid #cbd8d4; border-radius:7px; z-index:50; box-shadow:0 4px 12px rgba(0,0,0,0.15);"></div>
+          </div>
+
           <div class="field"><label>Tanggal pinjam</label><input id="fBorrow" type="date" value="${l.borrow}"></div>
           <div class="field"><label>Batas kembali</label><input id="fDue" type="date" value="${l.due}"></div>
           <div class="field">
@@ -1817,8 +1827,9 @@
         </div>`,
         () => {
           const student = $("fStudent").value.trim();
-          const bookId = Number($("fBook").value);
+          const bookId = Number($("fBookId").value);
           if (!student) return toast("Nama siswa wajib diisi.");
+          if (!bookId || !bookById(bookId)) return toast("Silakan pilih buku yang valid dari daftar pencarian.");
           
           if (id) {
             Object.assign(l, { student, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: $("fStatus").value });
@@ -1837,6 +1848,71 @@
           toast(id ? "Transaksi diubah." : "Peminjaman dicatat.");
         }
       );
+
+      setTimeout(() => {
+        const searchInput = $("fBookSearch");
+        const dropdown = $("bookSearchDropdown");
+        const hiddenId = $("fBookId");
+
+        if (!searchInput) return;
+
+        function renderDropdown(filterText) {
+          const q = filterText.toLowerCase();
+          const filtered = data.books.filter(b => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q)).slice(0, 15);
+
+          if (filtered.length === 0) {
+            dropdown.innerHTML = `<div style="padding:10px; font-size:12px; color:#888;">Buku tidak ditemukan</div>`;
+          } else {
+            dropdown.innerHTML = filtered.map(b => `
+              <div class="book-suggestion-item" data-id="${b.id}" style="padding:8px 12px; font-size:12px; border-bottom:1px solid #f0f3f2; cursor:pointer;">
+                <b>${b.title}</b> <span style="color:#666;">(Stok: ${b.stock})</span><br><small style="color:#889;">${b.author} - ${b.category}</small>
+              </div>
+            `).join("");
+
+            dropdown.querySelectorAll(".book-suggestion-item").forEach(item => {
+              item.addEventListener("mousedown", (e) => {
+                e.preventDefault();
+                const chosenId = item.dataset.id;
+                const chosenBook = bookById(chosenId);
+                if (chosenBook) {
+                  searchInput.value = `${chosenBook.title} (Stok: ${chosenBook.stock})`;
+                  hiddenId.value = chosenBook.id;
+                  dropdown.style.display = "none";
+                }
+              });
+            });
+          }
+          dropdown.style.display = "block";
+        }
+
+        searchInput.addEventListener("input", (e) => {
+          hiddenId.value = "";
+          renderDropdown(e.target.value);
+        });
+
+        searchInput.addEventListener("focus", () => {
+          renderDropdown(searchInput.value);
+        });
+
+        searchInput.addEventListener("blur", () => {
+          setTimeout(() => { dropdown.style.display = "none"; }, 200);
+        });
+
+        searchInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const q = searchInput.value.toLowerCase();
+            const found = data.books.find(b => b.title.toLowerCase().includes(q));
+            if (found) {
+              searchInput.value = `${found.title} (Stok: ${found.stock})`;
+              hiddenId.value = found.id;
+              dropdown.style.display = "none";
+            } else {
+              toast("Buku tidak ditemukan, silakan pilih dari daftar.");
+            }
+          }
+        });
+      }, 100);
     }
 
     function editLoan(id) {
