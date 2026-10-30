@@ -917,6 +917,7 @@
                 <thead>
                   <tr>
                     <th>Nama siswa</th>
+                    <th>Kelas</th>
                     <th>Buku</th>
                     <th>Pinjam</th>
                     <th>Batas kembali</th>
@@ -957,33 +958,34 @@
           </div>
         </section>
 
-        <!-- Halaman Data Peminjam -->
+        <!-- Halaman Data Peminjam (Sinkron dari Peminjaman) -->
         <section class="page" id="page-members">
           <div class="heading">
             <div>
               <h1>Data Peminjam 👥</h1>
-              <p>Tambah, ubah, dan hapus data peminjam / siswa perpustakaan.</p>
+              <p>Daftar siswa yang meminjam buku (disinkronkan otomatis dari peminjaman baru).</p>
             </div>
-            <button class="btn" id="addMemberBtn">＋ Tambah Peminjam</button>
           </div>
           <div class="panel">
             <div class="filters">
-              <input id="memberSearch" placeholder="Cari nama peminjam...">
+              <input id="memberSearch" placeholder="Cari nama peminjam atau kelas...">
             </div>
             <div class="table-wrap">
               <table>
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>Nama</th>
+                    <th>Nama Peminjam</th>
                     <th>Kelas</th>
+                    <th>Buku yang Dipinjam</th>
+                    <th>Tanggal Pinjam</th>
+                    <th>Status</th>
                     <th>Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="memberRows"></tbody>
               </table>
             </div>
-            <div id="memberEmpty" class="empty" style="display:none">Belum ada data peminjam. Silakan tambahkan peminjam baru.</div>
+            <div id="memberEmpty" class="empty" style="display:none">Belum ada data peminjam. Silakan buat peminjaman baru.</div>
           </div>
         </section>
 
@@ -1066,7 +1068,7 @@
           </div>
           <div class="panel">
             <h3>Data Sistem</h3>
-            <p style="font-size:12px;color:#7d888d">Reset akan mengembalikan buku, peminjam, transaksi, dan akun ke data awal.</p>
+            <p style="font-size:12px;color:#7d888d">Reset akan mengembalikan buku, transaksi, dan akun ke data awal.</p>
             <button class="btn danger-btn" id="resetDataBtn">Reset Data Awal</button>
           </div>
         </section>
@@ -1390,8 +1392,7 @@
         { id: 279, title: "Buku Panduan Guru Seni Musik Untuk Sd/Mi Kelas V", author: "Kemendikbud / Sekolah", category: "Kesenian & Olahraga", stock: 1, cover: "📖" },
         { id: 280, title: "Buku Panduan Guru Seni Musik Untuk Sd/Mi Kelas Iv", author: "Kemendikbud / Sekolah", category: "Kesenian & Olahraga", stock: 1, cover: "📖" }
       ],
-      members: [], // Dikosongkan tanpa data default
-      loans: [],   // Transaksi default juga dikosongkan agar bersih
+      loans: [],
       admins: [{ id: 1, name: "Petugas Perpustakaan", username: "petugas", password: "perpus123", role: "Admin", status: "Aktif" }],
       settings: { library: "Perpustakaan", school: "SDN Pisangan Timur 01 PG", location: "Jakarta Timur" }
     };
@@ -1435,7 +1436,6 @@
         } else {
           data = val;
           if (!data.settings) data.settings = clone(seed.settings);
-          if (!data.members) data.members = [];
           if (!data.loans) data.loans = [];
           if (!data.admins.some(a => a.username === "petugas")) data.admins.push(clone(seed.admins[0]));
         }
@@ -1490,7 +1490,7 @@
         stat("Total Judul Buku", data.books.length) +
         stat("Total Stok", data.books.reduce((s, b) => s + b.stock, 0)) +
         stat("Sedang Dipinjam", data.loans.filter(l => l.status !== "Dikembalikan").length) +
-        stat("Total Peminjam", data.members.length);
+        stat("Total Peminjam", data.loans.length);
       $("featuredBooks").innerHTML = data.books.slice(0, 4).map(bookCard).join("");
     }
 
@@ -1539,12 +1539,13 @@
       const st = $("loanStatusFilter").value;
       
       const arr = data.loans.filter(l => 
-        (!q || l.student.toLowerCase().includes(q) || (bookById(l.bookId)?.title || "").toLowerCase().includes(q)) &&
+        (!q || l.student.toLowerCase().includes(q) || (bookById(l.bookId)?.title || "").toLowerCase().includes(q) || (l.kelas || "").toLowerCase().includes(q)) &&
         (!st || l.status === st)
       );
       
       $("loanRows").innerHTML = arr.map(l => `<tr>
         <td>${l.student}</td>
+        <td>${l.kelas || "-"}</td>
         <td>${bookById(l.bookId)?.title || "-"}</td>
         <td>${l.borrow}</td>
         <td>${l.due}</td>
@@ -1567,15 +1568,21 @@
     function renderMembers() {
       if (!data) return;
       const q = $("memberSearch").value.toLowerCase();
-      const filtered = data.members.filter(m => m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q));
+      const filtered = data.loans.filter(l => 
+        l.student.toLowerCase().includes(q) || 
+        (l.kelas || "").toLowerCase().includes(q) || 
+        (bookById(l.bookId)?.title || "").toLowerCase().includes(q)
+      );
       
-      $("memberRows").innerHTML = filtered.map(m => `<tr>
-          <td>${m.id}</td>
-          <td>${m.name}</td>
-          <td>${m.kelas}</td>
-          <td>
-            <button class="table-btn" onclick="editMember('${m.id}')">Ubah</button>
-            <button class="table-btn" onclick="deleteMember('${m.id}')">Hapus</button>
+      $("memberRows").innerHTML = filtered.map(l => `<tr>
+          <td><b>${l.student}</b></td>
+          <td>${l.kelas || "-"}</td>
+          <td>${bookById(l.bookId)?.title || "-"}</td>
+          <td>${l.borrow}</td>
+          <td><span class="tag">${l.status}</span></td>
+          <td class="member-actions">
+            <button class="table-btn" onclick="editLoan(${l.id})">Ubah</button>
+            <button class="table-btn" onclick="deleteLoan(${l.id})">Hapus</button>
           </td>
         </tr>`).join("");
       
@@ -1589,7 +1596,7 @@
       $("reportStats").innerHTML = 
         stat("Judul Buku", data.books.length) +
         stat("Total Stok", totalStock) +
-        stat("Peminjam", data.members.length) +
+        stat("Peminjam", data.loans.length) +
         stat("Transaksi", data.loans.length);
         
       const cats = {};
@@ -1745,63 +1752,24 @@
       }
     }
 
-    function openMemberForm(id = null) {
-      const m = id ? data.members.find(x => x.id === id) : { name: "", kelas: "1A" };
-      
-      openModal(
-        id ? "Ubah Peminjam" : "Tambah Peminjam",
-        `<div class="field-grid">
-          <div class="field full"><label>Nama peminjam</label><input id="fMemberName" value="${m.name}"></div>
-          <div class="field">
-            <label>Kelas</label>
-            <select id="fClass">
-              ${["1A","1B","2A","2B","3A","3B","4A","4B","5A","5B","6A","6B"].map(x => `<option ${x === m.kelas ? "selected" : ""}>${x}</option>`).join("")}
-            </select>
-          </div>
-        </div>`,
-        () => {
-          const name = $("fMemberName").value.trim();
-          if (!name) return toast("Nama wajib diisi.");
-          
-          if (id) {
-            m.name = name;
-            m.kelas = $("fClass").value;
-          } else {
-            const nextNum = data.members.length > 0 ? Math.max(...data.members.map(x => Number(x.id.replace("AG", "")) || 0)) + 1 : 1;
-            data.members.push({ id: "AG" + String(nextNum).padStart(3, "0"), name, kelas: $("fClass").value });
-          }
-          
-          saveData();
-          closeModal();
-          toast(id ? "Peminjam diubah." : "Peminjam ditambahkan.");
-        }
-      );
-    }
-
-    function editMember(id) {
-      openMemberForm(id);
-    }
-
-    function deleteMember(id) {
-      if (data.loans.some(l => l.student === data.members.find(m => m.id === id)?.name && l.status !== "Dikembalikan")) return toast("Peminjam masih memiliki peminjaman aktif.");
-      if (confirm("Hapus peminjam ini?")) {
-        data.members = data.members.filter(m => m.id !== id);
-        saveData();
-        toast("Peminjam dihapus.");
-      }
-    }
-
     function openLoanForm(id = null) {
-      const l = id ? data.loans.find(x => x.id === id) : { student: "", bookId: data.books[0]?.id || "", borrow: "2026-10-21", due: "2026-10-28", status: "Dipinjam" };
+      const l = id ? data.loans.find(x => x.id === id) : { student: "", kelas: "5A", bookId: data.books[0]?.id || "", borrow: "2026-10-21", due: "2026-10-28", status: "Dipinjam" };
       
       const selectedBook = bookById(l.bookId);
       const initialBookText = selectedBook ? selectedBook.title : "";
 
       openModal(
-        id ? "Ubah Transaksi" : "Peminjaman Baru",
+        id ? "Ubah Transaksi / Peminjam" : "Peminjaman Baru",
         `<div class="field-grid">
           <div class="field full"><label>Nama siswa / peminjam</label><input id="fStudent" value="${l.student}"></div>
           
+          <div class="field">
+            <label>Kelas</label>
+            <select id="fClass">
+              ${["1A","1B","2A","2B","3A","3B","4A","4B","5A","5B","6A","6B"].map(x => `<option ${x === (l.kelas || "5A") ? "selected" : ""}>${x}</option>`).join("")}
+            </select>
+          </div>
+
           <div class="field full" style="position:relative;">
             <label>Cari & Pilih Buku (Ketik judul lalu pilih dari daftar atau tekan Enter)</label>
             <input id="fBookSearch" placeholder="Ketik judul buku untuk mencari..." value="${initialBookText}">
@@ -1823,25 +1791,26 @@
         </div>`,
         () => {
           const student = $("fStudent").value.trim();
+          const kelas = $("fClass").value;
           const bookId = Number($("fBookId").value);
           if (!student) return toast("Nama siswa wajib diisi.");
           if (!bookId || !bookById(bookId)) return toast("Silakan pilih buku yang valid dari daftar pencarian.");
           
           if (id) {
-            Object.assign(l, { student, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: $("fStatus").value });
+            Object.assign(l, { student, kelas, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: $("fStatus").value });
           } else {
             const b = bookById(bookId);
             if (!b || b.stock < 1) return toast("Stok buku habis.");
             b.stock--;
             data.loans.push({
-              id: Math.max(100, ...data.loans.map(x => x.id)) + 1,
-              student, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: $("fStatus").value
+              id: Math.max(100, ...data.loans.map(x => x.id), 0) + 1,
+              student, kelas, bookId, borrow: $("fBorrow").value, due: $("fDue").value, status: $("fStatus").value
             });
           }
           
           saveData();
           closeModal();
-          toast(id ? "Transaksi diubah." : "Peminjaman dicatat.");
+          toast(id ? "Data peminjam/transaksi diubah." : "Peminjaman dicatat.");
         }
       );
 
@@ -1926,7 +1895,7 @@
     }
 
     function deleteLoan(id) {
-      if (confirm("Hapus transaksi ini?")) {
+      if (confirm("Hapus data peminjam/transaksi ini?")) {
         const l = data.loans.find(x => x.id === id);
         if (l && l.status !== "Dikembalikan") {
           const b = bookById(l.bookId);
@@ -1934,7 +1903,7 @@
         }
         data.loans = data.loans.filter(x => x.id !== id);
         saveData();
-        toast("Transaksi dihapus.");
+        toast("Data peminjam dihapus.");
       }
     }
 
@@ -2077,7 +2046,6 @@
     $("addBookBtn").addEventListener("click", () => openBookForm());
     $("quickAddBook").addEventListener("click", () => openBookForm());
     $("newLoanBtn").addEventListener("click", () => openLoanForm());
-    $("addMemberBtn").addEventListener("click", () => openMemberForm());
     $("addAdminBtn").addEventListener("click", () => openAdminForm());
 
     $("catalogSearch").addEventListener("input", renderCatalog);
